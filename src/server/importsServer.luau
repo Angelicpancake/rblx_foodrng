@@ -5,7 +5,7 @@ local imports = {}
 
 imports.rep = ReplicatedStorage
 imports.work = Workspace
-imports.repEvents = imports.rep.Events
+imports.repEvents = imports.rep:WaitForChild("Events")
 
 imports.players = game:GetService("Players")
 
