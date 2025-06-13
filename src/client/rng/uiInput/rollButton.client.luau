@@ -1,8 +1,11 @@
-local rngImports = require(game.Players.LocalPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client"):WaitForChild("rng").rngImportsClient)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local rollEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("rng"):WaitForChild("rollEvent")
+local Players = game:GetService("Players")
+local locPlayer = Players.LocalPlayer
 
-local rngGui = rngImports.general.ui:WaitForChild("RollGui")
+local rngGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
 local rollButton = rngGui:WaitForChild("RollButton")
 
 rollButton.MouseButton1Click:Connect(function()
-    rngImports.rollEvent:FireServer()
+    rollEvent:FireServer()
 end)

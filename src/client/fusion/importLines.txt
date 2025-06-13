@@ -1,8 +1,0 @@
-importClient: require(playerScripts.Client.importsClient)
-importServer: require(ServerScriptService.Server.importsServer)
-
-rngImportsClient: require(game.Players.LocalPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client"):WaitForChild("rng").rngImportsClient)
-rngImportsServer: require(game:GetService("ServerScriptService"):WaitForChild("Server"):WaitForChild("rng").rngImportsServer)
-
-fusionImportsClient: require(game.Players.LocalPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client"):WaitForChild("fusion").fusionImportsClient)
-fusionImportsServer: require(game:GetService("ServerScriptService"):WaitForChild("Server"):WaitForChild("fusion").fusionImportsServer)

@@ -1,5 +1,7 @@
-local rngImports = require(game:GetService("ServerScriptService"):WaitForChild("Server"):WaitForChild("rng").rngImportsServer)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-rngImports.rollEvent.OnServerEvent:Connect(function()
+local rollEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("rng"):WaitForChild("rollEvent")
+
+rollEvent.OnServerEvent:Connect(function()
     print("rolled")
 end)
