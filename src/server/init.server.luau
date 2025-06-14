@@ -1,6 +1,8 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local fusion = require(ServerScriptService:WaitForChild("Server"):WaitForChild("fusion").fusionHandlerServer)
+local data = require(ServerScriptService:WaitForChild("Server"):WaitForChild("data").dataHandler)
 
 print("Hello world, from server!")
 
-fusion:Start()
+fusion.Start()
+data.Start()

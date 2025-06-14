@@ -1,6 +1,6 @@
 local fusion = {}
 
-function fusion:Start()
+function fusion.Start()
 
 end
 
