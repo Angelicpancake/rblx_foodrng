@@ -10,7 +10,6 @@
     regular table with rarity arrays as values
     {Rarity, Chance, Color}
 ]]
-
 return {
 	{ "Common", 0, Color3.fromRGB(222, 231, 222) },
 	{ "Uncommon", 3, Color3.fromRGB(155, 234, 192) },
