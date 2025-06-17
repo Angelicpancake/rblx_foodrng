@@ -4,6 +4,7 @@ local testDataStore = DataStoreService:GetDataStore("playerData", "alpha")
 local dataStore = testDataStore
 
 local onPlayerJoined = require(script.Parent.playerJoined)
+-- local onPlayerLeft = require(script.Parent:WaitForChild("saving").playerLeft)
 
 local data = {}
 
@@ -12,7 +13,9 @@ function data.Start()
         onPlayerJoined(player, dataStore)
     end)
 
-    game.Players.Player
+    -- game.Players.PlayerRemoving(function(player)
+    --     -- onPlayerLeft(player, dataStore)
+    -- end)
 end
 
 return data

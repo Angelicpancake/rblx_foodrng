@@ -19,10 +19,11 @@ end
 
 local function onPlayerJoin(player, dataStore)
     local userId = player.UserId
-    dataStore:RemoveAsync(userId)
     local success, playerData = pcall(function()
         return dataStore:GetAsync(userId)
     end)
+
+    print(playerData)
 
     if not success then
         warn("failed to load data for", player.Name, playerData)
