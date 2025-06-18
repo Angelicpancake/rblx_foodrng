@@ -9,6 +9,12 @@
       }
     },
 
+    "StarterGui": {
+      "Scripts-Gui": {
+        "$path": "src/scripts-gui"
+      }
+    },
+
     "ServerScriptService": {
       "Server": {
         "$path": "src/server"
