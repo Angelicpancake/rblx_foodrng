@@ -7,5 +7,5 @@ local rngGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
 local rollButton = rngGui:WaitForChild("RollButton")
 
 rollButton.MouseButton1Click:Connect(function()
-    rollEvent:FireServer()
+	rollEvent:FireServer()
 end)
