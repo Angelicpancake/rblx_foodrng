@@ -8,9 +8,11 @@ local withinArea = require(script.Parent.Parent.WithinArea)
 
 local openGui = require(locPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client"):WaitForChild("OpenGui"))
 local fusionGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
-local defaultGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
+--local defaultGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
 
-local currentlyWithin = false
+--default gui gets error does not exist
+
+--[[local currentlyWithin = false
 
 local function checkFusionEntered()
 	if withinArea(fusionHitbox) then
@@ -24,4 +26,7 @@ local function checkFusionEntered()
 	end
 end
 
-return checkFusionEntered
+return checkFusionEntered]]
+--
+
+return function() end

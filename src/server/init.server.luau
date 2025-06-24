@@ -5,5 +5,5 @@ local data = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Da
 
 print("Hello world, from server!")
 
-fusion.Start()
-data.Start()
+--fusion.Start()
+--data.Start()
