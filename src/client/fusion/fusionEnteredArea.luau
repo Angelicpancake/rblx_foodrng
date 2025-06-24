@@ -2,11 +2,11 @@ local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local locPlayer = Players.LocalPlayer
 
-local fusionHitbox = Workspace:WaitForChild("shops"):WaitForChild("fusionHitbox")
+local fusionHitbox = Workspace:WaitForChild("Shops"):WaitForChild("FusionHitbox")
 
-local withinArea = require(script.Parent.Parent.WithinArea)
+local withinArea = require(script.Parent.Parent.withinArea)
 
-local openGui = require(locPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client"):WaitForChild("OpenGui"))
+local openGui = require(locPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client").openGui)
 local fusionGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
 --local defaultGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
 

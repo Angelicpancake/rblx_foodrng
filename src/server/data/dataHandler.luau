@@ -3,7 +3,7 @@ local testDataStore = DataStoreService:GetDataStore("playerData", "alpha")
 -- use this datastore later in the actual release -> local defaultDataStore = DataStoreService:GetGlobalDataStore()
 local dataStore = testDataStore
 
-local onPlayerJoined = require(script.Parent:WaitForChild("PlayerJoined"))
+local onPlayerJoined = require(script.Parent.playerJoined)
 -- local onPlayerLeft = require(script.Parent:WaitForChild("saving").playerLeft)
 
 local data = {}
@@ -19,3 +19,4 @@ function data.Start()
 end
 
 return data
+

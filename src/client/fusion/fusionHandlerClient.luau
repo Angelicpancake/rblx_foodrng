@@ -1,6 +1,6 @@
 local RunService = game:GetService("RunService")
 
-local checkFusionEntered = require(script.Parent:WaitForChild("FusionEnteredArea"))
+local checkFusionEntered = require(script.Parent.fusionEnteredArea)
 
 local fusion = {}
 

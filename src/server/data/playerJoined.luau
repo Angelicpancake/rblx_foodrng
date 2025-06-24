@@ -1,7 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local playerDataTemplate = require(script.Parent:WaitForChild("PlayerDataTemplate"))
-local deepCopy = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("Deepcopy"))
+local playerDataTemplate = require(script.Parent.playerDataTemplate)
+local deepCopy = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").deepCopy)
 
 local function onPlayerJoin(player, dataStore)
 	local userId = player.UserId
