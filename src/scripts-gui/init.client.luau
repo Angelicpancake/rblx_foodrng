@@ -1,3 +1,4 @@
+print("Hello world, from scripts-gui")
 --[[
     gui entry ]]
 local replicatedStorage = game:GetService("ReplicatedStorage")
@@ -13,3 +14,5 @@ rollButton.MouseButton1Click:Connect(function()
 	--print("rollButton client => clicked")
 	remotes:WaitForChild("Rng"):WaitForChild("RollEvent"):FireServer() --fire to server
 end)
+
+print("scripts-gui, executiong ended")
