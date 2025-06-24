@@ -16,7 +16,7 @@ local roll = {}
 		Food Rarity
 ]]
 function givePlayer(foodName: StringValue, chance: StringValue, player: Player)
-	local food = Instance.new("Folder", player:WaitForChild("Inventory"))
+	local food = Instance.new("Folder", player:WaitForChild("Inventory"):WaitForChild("Food"))
 	food.Name = foodName
 
 	local rarity = Instance.new("StringValue", food)
