@@ -9,6 +9,9 @@ local function onPlayerJoin(player, dataStore)
 		return dataStore:GetAsync(userId)
 	end)
 
+	local inventory = Instance.new("Folder", player)
+	inventory.Name = "Inventory"
+
 	print(playerData)
 
 	if not success then
