@@ -18,3 +18,4 @@ rollEvent.OnServerEvent:Connect(function(player)
 end)
 
 print("Server, execution ended")
+print("d")
