@@ -16,11 +16,11 @@ local function checkFusionEntered()
 	if withinArea(fusionHitbox) then
 		if not currentlyWithin then
 			currentlyWithin = true
-			openGui(fusionGui)
+			--openGui(fusionGui)
 		end
 	else
 		currentlyWithin = false
-		openGui(defaultGui)
+		--openGui(defaultGui)
 	end
 end
 
