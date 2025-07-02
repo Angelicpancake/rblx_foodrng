@@ -6,9 +6,9 @@ local fusionHitbox = Workspace:WaitForChild("Shops"):WaitForChild("FusionHitbox"
 
 local withinArea = require(script.Parent.Parent.withinArea)
 
-local openGui = require(locPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client").openGui)
-local fusionGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
-local defaultGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("RollGui")
+--local openGui = require(locPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client").openGui)
+--local fusionGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
+--local defaultGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
 
 local currentlyWithin = false
 
