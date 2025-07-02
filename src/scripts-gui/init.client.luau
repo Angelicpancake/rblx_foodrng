@@ -2,25 +2,30 @@ print("Hello world, from scripts-gui")
 --[[
     gui entry ]]
 local replicatedStorage = game:GetService("ReplicatedStorage")
+local openGui = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("openGui"))
+local closeGui = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("closeGui"))
 
 local remotes = replicatedStorage:WaitForChild("Events")
 
-local rollGui = script.Parent.RollGui
-local rollButton = rollGui:WaitForChild("RollButton")
+local DefaultGui = script.Parent.DefaultGui
+local rollButton = DefaultGui:WaitForChild("RollButton")
 
 local invenGui = script.Parent.InventoryGui
-local invenFrame = invenGui.Inventory
-local invenButton = invenGui.InventoryButton
+local invenButton = DefaultGui.InventoryButton
 
 rollButton.MouseButton1Click:Connect(function()
 	--print("rollButton client => clicked")
 	remotes:WaitForChild("Rng"):WaitForChild("RollEvent"):FireServer() --fire to server
 end)
 
+local invenOpen = false
 invenButton.MouseButton1Click:Connect(function()
-	local temp = invenFrame.Visible
-
-	invenFrame.Visible = not temp
+	if not invenOpen then
+		openGui(invenGui)
+	else
+		closeGui(invenGui)
+	end
+	invenOpen = not invenOpen
 end)
 
 print("scripts-gui, executiong ended")

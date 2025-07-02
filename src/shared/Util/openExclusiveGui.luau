@@ -1,6 +1,6 @@
 local CollectionService = game:GetService("CollectionService")
 
-local function openGui(targetGui: ScreenGui)
+local function openExclusiveGui(targetGui: ScreenGui)
 
     for _, gui in ipairs(CollectionService:GetTagged("mainGui")) do
         gui.Enabled = false
@@ -9,4 +9,4 @@ local function openGui(targetGui: ScreenGui)
     targetGui.Enabled = true
 end
 
-return openGui
+return openExclusiveGui

@@ -1,26 +1,25 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local locPlayer = Players.LocalPlayer
 
 local fusionHitbox = Workspace:WaitForChild("Shops"):WaitForChild("FusionHitbox")
 
-local withinArea = require(script.Parent.Parent.withinArea)
+local withinArea = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").withinArea)
 
---local openGui = require(locPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client").openGui)
---local fusionGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
---local defaultGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
+local openExclusiveGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").openExclusiveGui)
+local fusionGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
+local defaultGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
 
 local currentlyWithin = false
 
 local function checkFusionEntered()
 	if withinArea(fusionHitbox) then
-		if not currentlyWithin then
-			currentlyWithin = true
-			--openGui(fusionGui)
-		end
-	else
+		currentlyWithin = true
+		openExclusiveGui(fusionGui)
+	elseif currentlyWithin then
 		currentlyWithin = false
-		--openGui(defaultGui)
+		openExclusiveGui(defaultGui)
 	end
 end
 
