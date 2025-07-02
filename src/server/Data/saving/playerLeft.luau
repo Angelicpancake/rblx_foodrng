@@ -12,8 +12,10 @@ local function create(folder)
 	for _, instance in pairs(folder:GetChildren()) do
 		if instance:IsA("Folder") then --if folder then recurse
 			result[instance.Name] = create(instance)
-		elseif instance:IsA("NumberValue") then
+		elseif instance:IsA("NumberValue") or instance:IsA("StringValue") then
 			result[instance.Name] = instance.Value
+		else
+			warn("Unsupported instance type:", instance.ClassName)
 		end
 	end
 	return result

@@ -18,6 +18,10 @@ local function addToPlayer(parent, table)
 			local val = Instance.new("NumberValue", parent)
 			val.Name = key
 			val.Value = value
+		elseif type(value) == "string" then
+			local val = Instance.new("StringValue", parent)
+			val.Name = key
+			val.Value = value
 		end
 	end
 end
