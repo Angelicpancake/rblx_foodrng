@@ -29,3 +29,5 @@ invenButton.MouseButton1Click:Connect(function()
 end)
 
 print("scripts-gui, executiong ended")
+
+local stopFuseObserving = require(script:WaitForChild("Fusion").fuseSelect)
