@@ -7,24 +7,9 @@ local remotes = replicatedStorage:WaitForChild("Events")
 local foodList = require(modules:WaitForChild("foodList"))
 local rarityList = require(modules:WaitForChild("rarityList"))
 local rollEvent = remotes:WaitForChild("Rng"):WaitForChild("RollEvent")
+local givePlayer = require(script.Parent.Parent.Util.givePlayer)
 
 local roll = {}
-
---[[ 
-    Give to player's inventory
-	Food Item
-		Food Rarity
-]]
-function givePlayer(foodName: StringValue, chance: StringValue, player: Player)
-	local food = Instance.new("Folder", player:WaitForChild("Inventory"):WaitForChild("Food"))
-	food.Name = foodName
-
-	local rarity = Instance.new("StringValue", food)
-	rarity.Name = "Rarity"
-	rarity.Value = chance
-
-	print("Gave", player.Name, foodName, "of rarity", chance)
-end
 
 --get a random rarity
 function getChance()
@@ -44,7 +29,7 @@ function roll.Start(player: Player)
 	local food = foodList[chance][math.random(1, #foodList[chance])]
 	--random food from foodList
 
-	givePlayer(food, chance, player)
+	print(givePlayer(food, chance, player))
 end
 
 return roll
