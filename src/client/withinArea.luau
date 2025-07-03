@@ -11,4 +11,4 @@ local character = Players.LocalPlayer.Character
 end]]
 --
 
-return function() end
+
