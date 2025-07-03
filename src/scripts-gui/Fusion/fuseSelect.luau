@@ -2,12 +2,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local Observers = require(ReplicatedStorage:WaitForChild("Packages").Observers)
+--local Observers = require(ReplicatedStorage:WaitForChild("Packages").Observers)
 
 local FusionGui = { PlayerGui:WaitForChild("FusionGui") }
 
 --fuseItem is the button icon
-local stopFuseObserving = Observers.observeTag("fusionItem", function (fuseItem: ImageButton)
+--[[local stopFuseObserving = Observers.observeTag("fusionItem", function (fuseItem: ImageButton)
 
     local connection = fuseItem.MouseButton1Click:Connect(function()
         print(fuseItem.Name, "clicked!");
@@ -19,4 +19,5 @@ local stopFuseObserving = Observers.observeTag("fusionItem", function (fuseItem:
     end
 end, FusionGui)
 
-return stopFuseObserving
+return stopFuseObserving]]
+return ""
