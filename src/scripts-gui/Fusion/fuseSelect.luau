@@ -6,9 +6,10 @@ local Observers = require(ReplicatedStorage:WaitForChild("Packages").Observers)
 
 local FusionGui = { PlayerGui:WaitForChild("FusionGui") }
 
-local stopFuseObserving = Observers.observeTag("fusionItem", function (fuseItem)
+--fuseItem is the button icon
+local stopFuseObserving = Observers.observeTag("fusionItem", function (fuseItem: ImageButton)
 
-    local connection = fuseItem.InputBegan:Connect(function()
+    local connection = fuseItem.MouseButton1Click:Connect(function()
         print(fuseItem.Name, "clicked!");
     end)
 
