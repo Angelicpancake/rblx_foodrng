@@ -13,7 +13,7 @@ local withinArea = require(script.Parent.Parent.withinArea)
 local currentlyWithin = false
 
 local function checkFusionEntered()
-	if withinArea(fusionHitbox) then
+	--[[if withinArea(fusionHitbox) then
 		if not currentlyWithin then
 			currentlyWithin = true
 			--openGui(fusionGui)
@@ -21,7 +21,7 @@ local function checkFusionEntered()
 	else
 		currentlyWithin = false
 		--openGui(defaultGui)
-	end
+	end]]
 end
 
 return checkFusionEntered

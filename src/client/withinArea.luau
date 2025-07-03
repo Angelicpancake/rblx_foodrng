@@ -10,5 +10,4 @@ local character = Players.LocalPlayer.Character
 	end
 end]]
 --
-
-
+return "."
