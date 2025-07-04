@@ -36,6 +36,7 @@ local function renderInventory(sorting: string, owned: boolean)
 		table.sort(foodItems, function(a, b)
 			return a.Name < b.Name --returns what comes before alphabetically
 		end)
+	end
 	--[[elseif sorting == "rarity" then --rarityAscending
 		-- common, uncommon, rare, epic, legendary, mythical
 		local rarityRank = {

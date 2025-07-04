@@ -14,7 +14,7 @@ local invenGui = script.Parent.InventoryGui
 local invenButton = DefaultGui.InventoryButton
 
 local renderInven = require(script.Inventory.inventoryRender)
-renderInven("rarity")
+renderInven("rarity", true)
 
 rollButton.MouseButton1Click:Connect(function()
 	--print("rollButton client => clicked")
