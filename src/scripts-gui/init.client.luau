@@ -1,11 +1,11 @@
 print("Hello world, from scripts-gui")
 --[[
     gui entry ]]
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local openGui = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("openGui"))
-local closeGui = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("closeGui"))
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local openGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("openGui"))
+local closeGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util"):WaitForChild("closeGui"))
 
-local remotes = replicatedStorage:WaitForChild("Events")
+local remotes = ReplicatedStorage:WaitForChild("Events")
 
 local DefaultGui = script.Parent.DefaultGui
 local rollButton = DefaultGui:WaitForChild("RollButton")
@@ -18,6 +18,8 @@ rollButton.MouseButton1Click:Connect(function()
 	remotes:WaitForChild("Rng"):WaitForChild("RollEvent"):FireServer() --fire to server
 end)
 
+local StartFusionInput = require(script:WaitForChild("Fusion").fuseSelect)
+local CleanupFusion = StartFusionInput()
 local invenOpen = false
 invenButton.MouseButton1Click:Connect(function()
 	if not invenOpen then
@@ -29,5 +31,3 @@ invenButton.MouseButton1Click:Connect(function()
 end)
 
 print("scripts-gui, executiong ended")
-
-local stopFuseObserving = require(script:WaitForChild("Fusion").fuseSelect)
