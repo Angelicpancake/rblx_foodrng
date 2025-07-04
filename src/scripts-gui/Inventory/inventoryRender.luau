@@ -15,7 +15,7 @@ local template = inventoryFrame.Scroll.Template
 
 local foodPerPage = 12
 
-local function renderInventory()
+local function renderInventory(sorting: string, owned: boolean)
 	local inventoryData = player:WaitForChild("Inventory", 5)
 	if not inventoryData then
 		warn("No Inventory Folder within timeout")
@@ -29,7 +29,31 @@ local function renderInventory()
 		end
 	end
 
-	for i, foodItem in ipairs(inventoryData.Food:GetChildren()) do
+	--sort the table
+	local foodItems = inventoryData.Food:GetChildren()
+
+	if sorting == "default" then
+		table.sort(foodItems, function(a, b)
+			return a.Name < b.Name --returns what comes before alphabetically
+		end)
+	end
+	--[[elseif sorting == "rarity" then --rarityAscending
+		-- common, uncommon, rare, epic, legendary, mythical
+		local rarityRank = {
+			Common = 1,
+			Uncommon = 2,
+			Rare = 3,
+			Epic = 4,
+			Legendary = 5,
+			Mythical = 6,
+		}
+
+		table.sort(foodItems, function(a, b) --true keeps the order, false swaps
+			return rarityRank[a.Rarity.Value] > rarityRank[b.Rarity.Value]
+		end)
+	end]]
+
+	for i, foodItem in ipairs(foodItems) do
 		if i > foodPerPage then
 			break
 		end
@@ -46,4 +70,4 @@ local function renderInventory()
 	return ""
 end
 
-return renderInventory()
+return renderInventory
