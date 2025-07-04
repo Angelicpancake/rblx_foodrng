@@ -13,6 +13,8 @@ local rollButton = DefaultGui:WaitForChild("RollButton")
 local invenGui = script.Parent.InventoryGui
 local invenButton = DefaultGui.InventoryButton
 
+local renderInven = require(script.Inventory.inventoryRender)
+
 rollButton.MouseButton1Click:Connect(function()
 	--print("rollButton client => clicked")
 	remotes:WaitForChild("Rng"):WaitForChild("RollEvent"):FireServer() --fire to server

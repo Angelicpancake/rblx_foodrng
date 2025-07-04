@@ -33,6 +33,7 @@ local function renderInventory()
 		if i > foodPerPage then
 			break
 		end
+		--print(foodItem.Name)
 
 		local itemClone = template:Clone()
 		itemClone.Name = foodItem.Name
