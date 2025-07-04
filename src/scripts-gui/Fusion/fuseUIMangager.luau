@@ -4,7 +4,6 @@ local FuseSelectionInit = require(script.Parent.fuseSelect)
 
 local function StartFusionInput()
     local FuseSelectTrove = FuseSelectionInit()
-    print(FuseSelectTrove)
     print("Fusion Input Connected")
 
     local function CleanupFusion()

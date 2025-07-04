@@ -1,8 +1,9 @@
 --Joshua
 
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local modules = replicatedStorage:WaitForChild("Shared"):WaitForChild("Foods"):WaitForChild("FoodUtil")
-local remotes = replicatedStorage:WaitForChild("Events")
+local ServerScriptService = game:GetService("ServerScriptService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local modules = ServerScriptService:WaitForChild("Server"):WaitForChild("Foods"):WaitForChild("FoodUtil")
+local remotes = ReplicatedStorage:WaitForChild("Events")
 
 local foodList = require(modules:WaitForChild("foodList"))
 local rarityList = require(modules:WaitForChild("rarityList"))

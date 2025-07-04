@@ -21,7 +21,7 @@ rollButton.MouseButton1Click:Connect(function()
 	remotes:WaitForChild("Rng"):WaitForChild("RollEvent"):FireServer() --fire to server
 end)
 
-local StartFusionInput = require(script:WaitForChild("Fusion").fuseSelect)
+local StartFusionInput = require(script:WaitForChild("Fusion").fuseUIMangager)
 local CleanupFusion = StartFusionInput()
 local invenOpen = false
 invenButton.MouseButton1Click:Connect(function()

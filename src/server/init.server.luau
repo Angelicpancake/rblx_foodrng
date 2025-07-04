@@ -10,7 +10,7 @@ local rollEvent = remotes:WaitForChild("Rng"):WaitForChild("RollEvent")
 
 print("Hello world, from server!")
 
---fusion.Start()
+fusion.Start()
 data.Start()
 
 rollEvent.OnServerEvent:Connect(function(player)
@@ -18,5 +18,3 @@ rollEvent.OnServerEvent:Connect(function(player)
 end)
 
 print("Server, execution ended")
-print("d")
-
