@@ -13,7 +13,26 @@ local itemData = require(script.Parent.inventoryData)
 local inventoryFrame = script.Parent.Parent.Parent.InventoryGui.Inventory
 local template = inventoryFrame.Scroll.Template
 
+local foodData = require(replicatedStorage.Shared.Foods.FoodUtil.foodSource)
+
 local foodPerPage = 12
+
+local rarityRank = {
+	Common = 1,
+	Uncommon = 2,
+	Rare = 3,
+	Epic = 4,
+	Legendary = 5,
+	Mythical = 6,
+}
+
+local function sortList(list: any, sorting: string)
+	if sorting == "rarity" then
+		table.sort(list, function(a, b)
+			return rarityRank[foodData.foodList[a].rarity] > rarityRank[foodData.foodList[b].rarity]
+		end)
+	end
+end
 
 local function renderInventory(sorting: string, owned: boolean)
 	local inventoryData = player:WaitForChild("Inventory", 5)
@@ -29,41 +48,50 @@ local function renderInventory(sorting: string, owned: boolean)
 		end
 	end
 
-	--sort the table
-	local foodItems = inventoryData.Food:GetChildren()
+	local ownedSet = {}
+	local foodList = foodData.foodList
+	local ownedList = {}
+	local unOwnedList = {}
 
-	if sorting == "default" then
-		table.sort(foodItems, function(a, b)
-			return a.Name < b.Name --returns what comes before alphabetically
-		end)
+	--folder name is the name so its not a dict table
+	for _, ownedFood in pairs(inventoryData.Food:GetChildren()) do
+		if not ownedSet[ownedFood.Name] then
+			ownedSet[ownedFood.Name] = {}
+		end
+
+		ownedSet[ownedFood] = true
 	end
-	--[[elseif sorting == "rarity" then --rarityAscending
-		-- common, uncommon, rare, epic, legendary, mythical
-		local rarityRank = {
-			Common = 1,
-			Uncommon = 2,
-			Rare = 3,
-			Epic = 4,
-			Legendary = 5,
-			Mythical = 6,
-		}
 
-		table.sort(foodItems, function(a, b) --true keeps the order, false swaps
-			return rarityRank[a.Rarity.Value] > rarityRank[b.Rarity.Value]
-		end)
-	end]]
+	for foodName, info in pairs(foodList) do
+		if ownedSet[foodName] then
+			table.insert(ownedList, foodName)
+		else
+			table.insert(unOwnedList, foodName)
+		end
+	end
 
-	for i, foodItem in ipairs(foodItems) do
+	sortList(ownedList, sorting)
+	sortList(unOwnedList, sorting)
+
+	local fullList = {}
+	for _, item in ipairs(ownedList) do
+		table.insert(fullList, item)
+	end
+	for _, item in ipairs(unOwnedList) do
+		table.insert(fullList, item)
+	end
+
+	for i, foodItem in ipairs(fullList) do
 		if i > foodPerPage then
 			break
 		end
 		--print(foodItem.Name)
 
 		local itemClone = template:Clone()
-		itemClone.Name = foodItem.Name
+		itemClone.Name = foodItem
 		itemClone.Visible = true
 
-		itemClone.ItemImage.ItemRarity.Text = foodItem.Name
+		itemClone.ItemImage.ItemRarity.Text = foodItem
 		itemClone.Parent = inventoryFrame.Scroll
 	end
 

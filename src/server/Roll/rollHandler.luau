@@ -4,7 +4,8 @@ local replicatedStorage = game:GetService("ReplicatedStorage")
 local modules = replicatedStorage:WaitForChild("Shared"):WaitForChild("Foods"):WaitForChild("FoodUtil")
 local remotes = replicatedStorage:WaitForChild("Events")
 
-local foodList = require(modules:WaitForChild("foodList"))
+--local foodList = require(modules:WaitForChild("foodList"))
+local foodList = require(modules.foodSource)
 local rarityList = require(modules:WaitForChild("rarityList"))
 local rollEvent = remotes:WaitForChild("Rng"):WaitForChild("RollEvent")
 local givePlayer = require(script.Parent.Parent.Util.givePlayer)
@@ -26,7 +27,7 @@ end
 
 function roll.Start(player: Player)
 	local chance = getChance()
-	local food = foodList[chance][math.random(1, #foodList[chance])]
+	local food = foodList.foodByRarity[chance][math.random(1, #foodList.foodByRarity[chance])]
 	--random food from foodList
 
 	print(givePlayer(food, chance, player))
