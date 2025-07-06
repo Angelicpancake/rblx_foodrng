@@ -25,11 +25,17 @@ local function FusionSelectionInit()
 
 	--observers.observeTag returns a function that cleanups observing when called
 	local StopFuseObserving = Observers.observeTag("fusionItem", function(foodItem: ImageButton)
+		assert(foodItem, `not sigma nil`)
+
 		local connection = foodItem.MouseButton1Click:Connect(function()
-			local value = foodItem.Parent.Name
+			local value = foodItem.Parent and foodItem.Parent.Name or nil
 			assert(t.string(value), "invalid foodname type")
 
 			print(SelectedFoods)
+
+			if value == nil then
+				value = ""
+			end
 
 			local foodIndex = table.find(SelectedFoods, value)
 
