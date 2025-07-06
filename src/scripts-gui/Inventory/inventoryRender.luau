@@ -5,7 +5,8 @@
         For each child if the child is a frame and not template destory
         then loop data to add cloning
 ]]
-local replicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local players = game:GetService("Players")
 local player = players.LocalPlayer
 
@@ -13,7 +14,8 @@ local itemData = require(script.Parent.inventoryData)
 local inventoryFrame = script.Parent.Parent.Parent.InventoryGui.Inventory
 local template = inventoryFrame.Scroll.Template
 
-local foodData = require(replicatedStorage.Shared.Foods.FoodUtil.foodSource)
+local getFoodList = ReplicatedStorage.Events.Rng.GetFoodList
+local foodData = getFoodList:InvokeServer() -- get foodlist from server
 
 local foodPerPage = 12
 

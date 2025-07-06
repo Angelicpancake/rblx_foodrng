@@ -4,7 +4,7 @@ local backButton = inventory.Back
 
 local renderInven = require(script.Parent.inventoryRender)
 
-local function pageInit(page: NumberValue, sort: StringValue)
+local function pageInit(page: number, sort: string)
 	nextButton.MouseButton1Click:Connect(function()
 		if page < 15 then
 			page += 1
