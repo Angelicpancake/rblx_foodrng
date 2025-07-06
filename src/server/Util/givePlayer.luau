@@ -3,7 +3,7 @@
 	Food Item
 		Food Rarity
 ]]
-function givePlayer(foodName: StringValue, chance: StringValue, player: Player)
+function givePlayer(foodName: string, chance: string, player: Player)
 	local existingItem = player:WaitForChild("Inventory"):WaitForChild("Food"):FindFirstChild(foodName)
 	local result = ``
 
