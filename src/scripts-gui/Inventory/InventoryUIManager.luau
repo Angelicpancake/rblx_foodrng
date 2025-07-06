@@ -1,8 +1,22 @@
-local inventory = script.Parent.Parent.Parent.InventoryGui.Inventory
-local nextButton = inventory.Next
-local backButton = inventory.Back
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local InventoryGui = PlayerGui:WaitForChild("InventoryGui")
+local DefaultGui = PlayerGui:WaitForChild("DefaultGui")
 
-print(nextButton)
-print(backButton)
+local renderInven = require(script.Parent.inventoryRender)
+local InventoryDefaultButtonInit = require(script.Parent.inventoryDefaultButton)
+local pageRender = require(script.Parent.pageRender)
 
-return ""
+local page = 1
+
+local function InventoryInit()
+	--Params: (sorting category, owned: boolean)
+	renderInven("rarity", true, page)
+	page = pageRender(page, "rarity")
+
+	--Params: (InventoryDefaultButton, InventoryGui)
+	InventoryDefaultButtonInit(DefaultGui:WaitForChild("InventoryButton"), InventoryGui)
+end
+
+return InventoryInit

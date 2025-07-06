@@ -35,6 +35,7 @@ local function sortList(list: any, sorting: string)
 end
 
 local function renderInventory(sorting: string, owned: boolean, currentPage: number)
+	print(`curr page {currentPage}`)
 	local inventoryData = player:WaitForChild("Inventory", 5)
 	if not inventoryData then
 		warn("No Inventory Folder within timeout")
@@ -107,8 +108,6 @@ local function renderInventory(sorting: string, owned: boolean, currentPage: num
 		itemClone.ItemImage.ItemQuan.Text = quan
 		itemClone.Parent = inventoryFrame.Scroll
 	end
-
-	return ""
 end
 
 return renderInventory
