@@ -8,7 +8,8 @@ local t = require(ReplicatedStorage:WaitForChild("Packages").t)
 local Trove = require(ReplicatedStorage:WaitForChild("Packages").Trove)
 
 local FusionGui = PlayerGui:WaitForChild("FusionGui")
-local FusionGuiChildren = { FusionGui }
+local InventoryGui = PlayerGui:WaitForChild("InventoryGui")
+local AllowedAncestors = { FusionGui, InventoryGui }
 local FuseButton: ImageButton = FusionGui:WaitForChild("MainFrame"):WaitForChild("FuseButton")
 
 local FuseButtonCallback: RemoteFunction = ReplicatedStorage:WaitForChild("Events"):WaitForChild("Fusion"):WaitForChild("FuseClickedFunc")
@@ -19,7 +20,7 @@ local function FusionSelectionInit()
     local SelectedFoods: { string } = {}
 
     FuseSelectTrove:Add(function()
-        table.clear(SelectedFoods)
+        SelectedFoods = nil
     end)
 
     --observers.observeTag returns a function that cleanups observing when called
@@ -27,11 +28,12 @@ local function FusionSelectionInit()
         
         local connection = foodItem.MouseButton1Click:Connect(function()
 
-            assert(t.string(foodItem.Name), "invalid foodname type")
+            local value = foodItem.Parent.Name
+            assert(t.string(value), "invalid foodname type")
 
             print(SelectedFoods)
 
-            local foodIndex = table.find(SelectedFoods, foodItem.Name)
+            local foodIndex = table.find(SelectedFoods, value)
 
             if foodIndex then
                 print("food already selected, removing food")
@@ -42,7 +44,7 @@ local function FusionSelectionInit()
                 return
             end
             
-            table.insert(SelectedFoods, foodItem.Name)
+            table.insert(SelectedFoods, value)
         end)
 
         return function ()
@@ -50,11 +52,12 @@ local function FusionSelectionInit()
             print("connection disconnected")
         end
 
-    end, FusionGuiChildren)
+    end, AllowedAncestors)
     FuseSelectTrove:Add(StopFuseObserving)
 
     local FuseButtonConnection = FuseButton.MouseButton1Click:Connect(function()
         local result = FuseButtonCallback:InvokeServer(SelectedFoods)
+        table.clear(SelectedFoods)
         print(SelectedFoods, "=>", result)
     end)
     FuseSelectTrove:Add(FuseButtonConnection)

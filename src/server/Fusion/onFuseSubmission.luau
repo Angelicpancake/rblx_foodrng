@@ -7,7 +7,7 @@ local t = require(ReplicatedStorage:WaitForChild("Packages").t)
 local FusionRecipes = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Foods"):
 WaitForChild("FoodUtil").fusionList)
 
-local function OnFuseClickedInit()
+local function OnFuseSubmissionInit()
     FuseClickedFunc.OnServerInvoke = function(player: Player, foods: table)
         for _, foodName in ipairs(foods) do
             if not t.string(foodName) then
@@ -27,4 +27,4 @@ local function OnFuseClickedInit()
     end
 end
 
-return OnFuseClickedInit
+return OnFuseSubmissionInit

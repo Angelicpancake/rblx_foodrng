@@ -1,8 +1,8 @@
-local OnFuseClickedInit = require(script.Parent.onFuseClicked)
+local OnFuseSubmissionInit = require(script.Parent.onFuseSubmission)
 local fusion = {}
 
 function fusion.Start()
-    OnFuseClickedInit()
+    OnFuseSubmissionInit()
 end
 
 return fusion
