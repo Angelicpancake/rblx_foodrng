@@ -34,7 +34,7 @@ local function sortList(list: any, sorting: string)
 	end
 end
 
-local function renderInventory(sorting: string, owned: boolean)
+local function renderInventory(sorting: string, owned: boolean, currentPage: number)
 	local inventoryData = player:WaitForChild("Inventory", 5)
 	if not inventoryData then
 		warn("No Inventory Folder within timeout")
@@ -81,11 +81,15 @@ local function renderInventory(sorting: string, owned: boolean)
 		table.insert(fullList, item)
 	end
 
-	for i, foodItem in ipairs(fullList) do
-		if i > foodPerPage then
-			break
-		end
-		--print(foodItem.Name)
+	local startIndex = (currentPage - 1) * foodPerPage + 1
+	local endIndex = startIndex + foodPerPage
+
+	if endIndex > #fullList then
+		endIndex = #fullList
+	end
+
+	for i = startIndex, endIndex do
+		local foodItem = fullList[i]
 
 		local itemClone = template:Clone()
 		itemClone.Name = foodItem
@@ -99,6 +103,7 @@ local function renderInventory(sorting: string, owned: boolean)
 			quan = 0
 		end
 
+		itemClone.ItemImage.ItemName.Text = foodItem
 		itemClone.ItemImage.ItemQuan.Text = quan
 		itemClone.Parent = inventoryFrame.Scroll
 	end

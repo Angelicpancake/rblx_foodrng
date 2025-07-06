@@ -14,7 +14,28 @@ local invenGui = script.Parent.InventoryGui
 local invenButton = DefaultGui.InventoryButton
 
 local renderInven = require(script.Inventory.inventoryRender)
-renderInven("rarity", true)
+local sort = "rarity"
+renderInven(sort, true, 1)
+
+local inventory = script.Parent.InventoryGui.Inventory
+local nextButton = inventory.Next
+local backButton = inventory.Back
+
+local page = 1
+
+nextButton.MouseButton1Click:Connect(function()
+	if page < 15 then
+		page += 1
+		renderInven(sort, true, page)
+	end
+end)
+
+backButton.MouseButton1Click:Connect(function()
+	if page > 1 then
+		page -= 1
+		renderInven(sort, true, page)
+	end
+end)
 
 rollButton.MouseButton1Click:Connect(function()
 	--print("rollButton client => clicked")
