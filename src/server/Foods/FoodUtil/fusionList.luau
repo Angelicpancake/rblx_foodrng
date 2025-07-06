@@ -1,4 +1,4 @@
-local japan = require(script.Parent:WaitForChild("Fusions").japanFusions)
+--[[ japan = require(script.Parent:WaitForChild("Fusions").japanFusions)
 
 local fusions = {}
 

@@ -11,7 +11,7 @@ local RollEvent = Events:WaitForChild("Rng"):WaitForChild("RollEvent")
 local RollingDefaultButtonInit = require(script.Parent.rollingDefaultButton)
 
 local function RollingInit()
-    RollingDefaultButtonInit(RollButton, RollEvent)
+	RollingDefaultButtonInit(RollButton, RollEvent)
 end
 
 return RollingInit
