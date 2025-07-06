@@ -91,7 +91,15 @@ local function renderInventory(sorting: string, owned: boolean)
 		itemClone.Name = foodItem
 		itemClone.Visible = true
 
-		itemClone.ItemImage.ItemRarity.Text = foodItem
+		local quan
+
+		if ownedSet[foodItem] then
+			quan = inventoryData.Food:FindFirstChild(foodItem).Quantity.Value
+		else
+			quan = 0
+		end
+
+		itemClone.ItemImage.ItemQuan.Text = quan
 		itemClone.Parent = inventoryFrame.Scroll
 	end
 
