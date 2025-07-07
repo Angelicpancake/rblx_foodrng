@@ -19,26 +19,36 @@ local function FusionSelectionInit()
 	local FuseSelectTrove = Trove.new()
 	local SelectedFoods: { string } = {}
 
-	local LastClicked: ImageButton = nil
-
-	local LastClicked: ImageButton = nil
-
-	local LastClicked: ImageButton = nil
+	local LastClicked: ImageButton? = nil
 
 	FuseSelectTrove:Add(function()
-		SelectedFoods = nil
+		table.clear(SelectedFoods)
 		LastClicked = nil
 	end)
 
 	--observers.observeTag returns a function that cleanups observing when called
 	local StopFuseObserving = Observers.observeTag("fusionItem", function(foodItem: ImageButton)
 		local OnFusionItemClick: () -> nil = nil
+		assert(foodItem.Parent, "foodItem Parent is nil")
+		assert(foodItem.Parent.Parent, "foodItem Parent is nil")
+		assert(foodItem.Parent.Parent:FindFirstChild("Food1"), "foodItem Parent is nil")
 		if foodItem:GetAttribute("fusionType") == "recipeMenu" then
 			OnFusionItemClick = function()
 				table.clear(SelectedFoods)
-				local Food1 = foodItem.Parent.Parent.Food1:GetAttribute("Name")
-				local Food2 = foodItem.Parent.Parent.Food2:GetAttribute("Name")
-				SelectedFoods = { Food1, Food2 }
+
+				local Food1 = assert(
+					foodItem.Parent.Parent:FindFirstChild("Food1"), 
+					"Food1 attribute access failed"
+				) :: ImageLabel
+
+				local Food2 = assert(
+					foodItem.Parent.Parent:FindFirstChild("Food2"),
+					"Food1 attribute access failed"
+				) :: ImageLabel
+
+				local Food1Name = assert( Food1:GetAttribute("Name"), "Could not get name attribute from food1") :: string
+				local Food2Name = assert( Food2:GetAttribute("Name"), "Could not get name attribute from food2") :: string
+				SelectedFoods = { Food1Name , Food2Name }
 				for _, food in SelectedFoods do
 					assert(t.string(food), "invalid foodname type")
 				end
@@ -85,8 +95,10 @@ local function FusionSelectionInit()
 		local result = FuseButtonCallback:InvokeServer(SelectedFoods)
 		print(SelectedFoods, "=>", result)
 
-		LastClicked.BackgroundTransparency = 1
-		LastClicked = nil
+		if LastClicked then
+			LastClicked.BackgroundTransparency = 1
+			LastClicked = nil
+		end
 
 		table.clear(SelectedFoods)
 	end)

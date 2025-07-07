@@ -7,8 +7,6 @@ local locPlayer = Players.LocalPlayer
 
 local FusionProxPrompt: ProximityPrompt = Workspace:WaitForChild("Shops"):WaitForChild("FusionHitbox"):WaitForChild("ProximityPrompt")
 
-local withinArea = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").withinArea)
-
 local openExclusiveGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").openExclusiveGui)
 local fusionGui: ScreenGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
 local defaultGui: ScreenGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
