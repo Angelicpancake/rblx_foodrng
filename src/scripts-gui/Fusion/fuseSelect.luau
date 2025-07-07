@@ -33,11 +33,7 @@ local function FusionSelectionInit()
 
 			print(SelectedFoods)
 
-			if value == nil then
-				value = ""
-			end
-
-			local foodIndex = table.find(SelectedFoods, value)
+			local foodIndex = value and table.find(SelectedFoods, value) or nil
 
 			if foodIndex then
 				print("food already selected, removing food")
@@ -48,7 +44,9 @@ local function FusionSelectionInit()
 				return
 			end
 
-			table.insert(SelectedFoods, value)
+			if value then
+				table.insert(SelectedFoods, value)
+			end
 		end)
 
 		return function()
