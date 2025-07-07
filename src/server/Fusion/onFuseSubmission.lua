@@ -8,7 +8,7 @@ local FusionRecipes = require(ServerScriptService:WaitForChild("Server"):WaitFor
 WaitForChild("FoodUtil").fusionList)
 
 local function OnFuseSubmissionInit()
-    FuseClickedFunc.OnServerInvoke = function(player: Player, foods: table)
+    FuseClickedFunc.OnServerInvoke = function(player: Player, foods: {string})
         for _, foodName in ipairs(foods) do
             if not t.string(foodName) then
                 return "Error"
