@@ -19,6 +19,9 @@ local function FusionSelectionInit()
 	local FuseSelectTrove = Trove.new()
 	local SelectedFoods: { string } = {}
 
+	local LastClicked: ImageButton = nil
+
+	local LastClicked: ImageButton = nil
 
 	local LastClicked: ImageButton = nil
 
@@ -35,7 +38,7 @@ local function FusionSelectionInit()
 				table.clear(SelectedFoods)
 				local Food1 = foodItem.Parent.Parent.Food1:GetAttribute("Name")
 				local Food2 = foodItem.Parent.Parent.Food2:GetAttribute("Name")
-				SelectedFoods = {Food1, Food2}
+				SelectedFoods = { Food1, Food2 }
 				for _, food in SelectedFoods do
 					assert(t.string(food), "invalid foodname type")
 				end
