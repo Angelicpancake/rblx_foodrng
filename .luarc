@@ -1,0 +1,5 @@
+{
+    "files": ["**/*.lua"],
+    "types": ["roblox"],
+    "typeCheckingMode": "strict"
+}

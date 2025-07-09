@@ -10,18 +10,22 @@ local rollEvent = remotes:WaitForChild("Rng"):WaitForChild("RollEvent")
 
 local foodData = require(script.Foods.FoodUtil.foodSource)
 local getFoodList = replicatedStorage.Events.Rng.GetFoodList
+local DataReadyEvent: BindableEvent = replicatedStorage.Events.Data.dataReadyEvent
 
 print("Hello world, from server!")
 
 fusion.Start()
 data.Start()
 
-getFoodList.OnServerInvoke = function(player)
-	return foodData --send table to client
-end
+DataReadyEvent.Event:Connect(function()
+	getFoodList.OnServerInvoke = function(player)
+		return foodData --send table to client
+	end
 
-rollEvent.OnServerEvent:Connect(function(player)
-	roll.Start(player)
+
+	rollEvent.OnServerEvent:Connect(function(player)
+		roll.Start(player)
+	end)
 end)
 
 print("Server, execution ended")

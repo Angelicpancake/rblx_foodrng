@@ -13,21 +13,28 @@ local givePlayer = require(script.Parent.Parent.Util.givePlayer)
 
 local roll = {}
 
+local Players = game:GetService("Players")
+local PlayerDataFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Data").playerDataMap)
+
 --get a random rarity
-function getChance()
-	for i, rarity in ipairs(rarityList) do
+function getChance(LuckBoost: number)
+	for i, RarityObj in ipairs(rarityList) do
 		if i == 1 then
 			continue --skip common (default rarity)
-		elseif math.random(1, rarity[2]) == 1 then
-			return rarity[1]
+		elseif math.random(1, RarityObj.Weight - math.ceil(RarityObj.Weight * LuckBoost)) == 1 then
+			return RarityObj.Rarity
 		end
 	end
 
-	return rarityList[1][1] --return common if all else fails
+	return rarityList[1].Rarity --return common if all else fails
 end
 
 function roll.Start(player: Player)
-	local chance = getChance()
+	local Upgrades = assert(PlayerDataFuncs.RuntimeGetPlayerData(player.UserId).Upgrades)
+	local LuckBoost = Upgrades.LuckBoost
+	print("Rolling With A Luckboost of", LuckBoost, "%")
+	local chance = getChance(LuckBoost)
+	print(chance)
 	local food = foodList.foodByRarity[chance][math.random(1, #foodList.foodByRarity[chance])]
 	--random food from foodList
 

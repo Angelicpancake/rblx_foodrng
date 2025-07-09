@@ -29,33 +29,28 @@ local function FusionSelectionInit()
 	--observers.observeTag returns a function that cleanups observing when called
 	local StopFuseObserving = Observers.observeTag("fusionItem", function(foodItem: ImageButton)
 		local OnFusionItemClick: () -> nil = nil
-		assert(foodItem.Parent, "foodItem Parent is nil")
-		assert(foodItem.Parent.Parent, "foodItem Parent is nil")
-		assert(foodItem.Parent.Parent:FindFirstChild("Food1"), "foodItem Parent is nil")
 		if foodItem:GetAttribute("fusionType") == "recipeMenu" then
 			OnFusionItemClick = function()
 				table.clear(SelectedFoods)
 
 				local Food1 = assert(
-					foodItem.Parent.Parent:FindFirstChild("Food1"), 
+					foodItem:FindFirstAncestor("Food1"), 
 					"Food1 attribute access failed"
 				) :: ImageLabel
 
 				local Food2 = assert(
-					foodItem.Parent.Parent:FindFirstChild("Food2"),
+					foodItem:FindFirstAncestor("Food2"),
 					"Food1 attribute access failed"
 				) :: ImageLabel
 
 				local Food1Name = assert( Food1:GetAttribute("Name"), "Could not get name attribute from food1") :: string
 				local Food2Name = assert( Food2:GetAttribute("Name"), "Could not get name attribute from food2") :: string
 				SelectedFoods = { Food1Name , Food2Name }
-				for _, food in SelectedFoods do
-					assert(t.string(food), "invalid foodname type")
-				end
 			end
 		elseif foodItem:GetAttribute("fusionType") == "Inventory" then
 			OnFusionItemClick = function()
-				local value = foodItem.Parent.Name
+				local Food = assert(foodItem.Parent, "could not retrieve foodItem parent")
+				local value = Food.Name
 				assert(t.string(value), "invalid foodname type")
 
 				local foodIndex = table.find(SelectedFoods, value)

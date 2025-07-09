@@ -11,10 +11,10 @@
     {Rarity, Chance, Color}
 ]]
 return {
-	{ "Common", 0, Color3.fromRGB(222, 231, 222) },
-	{ "Uncommon", 3, Color3.fromRGB(155, 234, 192) },
-	{ "Rare", 25, Color3.fromRGB(0, 0, 255) },
-	{ "Epic", 100, Color3.fromRGB(128, 0, 128) },
-	{ "Legendary", 500, Color3.fromRGB(255, 215, 0) },
-	{ "Mythical", 2000, Color3.fromRGB(230, 171, 230) },
+	{ Rarity = "Common", Weight = 0, Color = Color3.fromRGB(222, 231, 222) },
+	{ Rarity = "Uncommon", Weight = 3, Color = Color3.fromRGB(155, 234, 192) },
+	{ Rarity = "Rare", Weight = 25, Color = Color3.fromRGB(0, 0, 255) },
+	{ Rarity = "Epic", Weight = 100, Color = Color3.fromRGB(128, 0, 128) },
+	{ Rarity = "Legendary", Weight = 500, Color = Color3.fromRGB(255, 215, 0) },
+	{ Rarity = "Mythical", Weight = 2000, Color = Color3.fromRGB(230, 171, 230) },
 }
