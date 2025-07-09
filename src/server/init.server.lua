@@ -22,7 +22,6 @@ DataReadyEvent.Event:Connect(function()
 		return foodData --send table to client
 	end
 
-
 	rollEvent.OnServerEvent:Connect(function(player)
 		roll.Start(player)
 	end)
