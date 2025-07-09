@@ -13,6 +13,7 @@ local foodData = {}
 foodData.foodByRarity = {}
 foodData.foodByCountry = {}
 foodData.foodList = {
+	["Ramen"] = { rarity = "Common", country = "Japan" },
 	["Onigiri"] = { rarity = "Common", country = "Japan" },
 	["Miso Soup"] = { rarity = "Common", country = "Japan" },
 	["Tamagoyaki"] = { rarity = "Common", country = "Japan" },
@@ -32,9 +33,9 @@ foodData.foodList = {
 	["Kaiseki"] = { rarity = "Epic", country = "Japan" },
 	["Osechi Ryori"] = { rarity = "Epic", country = "Japan" },
 	["Ise Ebi"] = { rarity = "Epic", country = "Japan" },
-	["Jeweled Bento Box"] = { rarity = "Epic", country = "Japan" },
+	["Spirit Bento Box"] = { rarity = "Epic", country = "Japan" },
 	["Whale Sashimi"] = { rarity = "Legendary", country = "Japan" },
-	["Gold-Flake Wagashi"] = { rarity = "Legendary", country = "Japan" },
+	["Wagashi Jelly"] = { rarity = "Legendary", country = "Japan" },
 	["Imperial Court Feast"] = { rarity = "Legendary", country = "Japan" },
 	["100-Year Soy Sauce"] = { rarity = "Legendary", country = "Japan" },
 	["Pearl Rice"] = { rarity = "Legendary", country = "Japan" },
