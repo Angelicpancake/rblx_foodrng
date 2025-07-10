@@ -1,8 +1,8 @@
 local fusions = {
-    ["Peanut Butter|Jam"] = "PBJ Sandwich",
-    ["Sloppy Joe|Homer's Donut"] = "Sloppy Homer",
-    ["NYC Pizza|Deep Dish Pizza"] = "Mutant Rat Pizza",
-    ["MacRonald Fries|MacRonald Burger"] = "Smiley Meal"
+    ["Jam|Peanut Butter"] = "PBJ Sandwich",
+    ["Homer's Donut|Sloppy Joe"] = "Sloppy Homer",
+    ["Deep Dish Pizza|NYC Pizza"] = "Mutant Rat Pizza",
+    ["MacRonald Burger|MacRonald Fries"] = "Smiley Meal"
 }
 
 return fusions

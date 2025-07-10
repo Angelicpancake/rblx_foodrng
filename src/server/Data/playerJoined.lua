@@ -65,7 +65,7 @@ local function onPlayerJoin(player, dataStore)
 		print("creating new copy")
 
 		local secondSuccess, newPlayerData = pcall(function()
-			return dataStore:GetAsync(userId)
+			dataStore:GetAsync(userId)
 		end)
 
 		if not secondSuccess then
@@ -84,6 +84,7 @@ local function onPlayerJoin(player, dataStore)
 
 	if playerData._DATAVERSION ~= PlayerDataTemplate._DATAVERSION then
 		playerData = MigratePlayerData(playerData, PlayerDataTemplate)
+		dataStore:SetAsync(userId, playerData)
 	end
 
 	if not PlayerDataTypes.PlayerDataTypeChecker(playerData) then

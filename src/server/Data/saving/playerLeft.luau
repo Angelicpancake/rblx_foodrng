@@ -22,23 +22,23 @@ local function create(folder)
 end
 
 local function onPlayerLeft(player, dataStore)
-	local userID = player.UserId
-	local savedData = {}
+	-- local userID = player.UserId
+	-- local savedData = {}
 
-	savedData.Inventory = create(player:WaitForChild("Inventory"))
-	savedData.Profile = create(player:WaitForChild("Profile"))
+	-- savedData.Inventory = create(player:WaitForChild("Inventory"))
+	-- savedData.Profile = create(player:WaitForChild("Profile"))
 
-	local success, err = pcall(function()
-		dataStore:SetAsync(userID, savedData)
-	end)
+	-- local success, err = pcall(function()
+	-- 	dataStore:SetAsync(userID, savedData)
+	-- end)
 
-	if success then
-		print("Successfully saved data for", player.Name)
-	else
-		warn("Failed to save data for", player.Name, err)
-	end
+	-- if success then
+	-- 	print("Successfully saved data for", player.Name)
+	-- else
+	-- 	warn("Failed to save data for", player.Name, err)
+	-- end
 
-	print("on-leave", savedData)
+	-- print("on-leave", savedData)
 end
 
 return onPlayerLeft

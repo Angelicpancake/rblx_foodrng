@@ -33,15 +33,18 @@ local function FusionSelectionInit()
 			OnFusionItemClick = function()
 				table.clear(SelectedFoods)
 
+				local ParentFrame = assert(foodItem:FindFirstAncestorOfClass("Frame"), "Could not find Parent Frame")
+				print(ParentFrame.Name)
+
 				local Food1 = assert(
-					foodItem:FindFirstAncestor("Food1"), 
+					ParentFrame:FindFirstChild("Food1"),
 					"Food1 attribute access failed"
-				) :: ImageLabel
+				)
 
 				local Food2 = assert(
-					foodItem:FindFirstAncestor("Food2"),
-					"Food1 attribute access failed"
-				) :: ImageLabel
+					ParentFrame:FindFirstChild("Food2"),
+					"Food2 attribute access failed"
+				)
 
 				local Food1Name = assert( Food1:GetAttribute("Name"), "Could not get name attribute from food1") :: string
 				local Food2Name = assert( Food2:GetAttribute("Name"), "Could not get name attribute from food2") :: string
@@ -71,12 +74,14 @@ local function FusionSelectionInit()
 		end
 
 		local connection = foodItem.MouseButton1Click:Connect(function()
-			OnFusionItemClick()
-			if LastClicked then
-				LastClicked.BackgroundTransparency = 1
-			end
-			foodItem.BackgroundTransparency = 0.7
-			LastClicked = foodItem
+			task.spawn(function()
+				OnFusionItemClick()
+				if LastClicked then
+					LastClicked.BackgroundTransparency = 1
+				end
+				foodItem.BackgroundTransparency = 0.7
+				LastClicked = foodItem
+			end)
 		end)
 
 		return function()
@@ -87,15 +92,17 @@ local function FusionSelectionInit()
 	FuseSelectTrove:Add(StopFuseObserving)
 
 	local FuseButtonConnection = FuseButton.MouseButton1Click:Connect(function()
-		local result = FuseButtonCallback:InvokeServer(SelectedFoods)
-		print(SelectedFoods, "=>", result)
+		task.spawn(function()
+			local result = FuseButtonCallback:InvokeServer(SelectedFoods)
+			print(SelectedFoods, "=>", result)
 
-		if LastClicked then
-			LastClicked.BackgroundTransparency = 1
-			LastClicked = nil
-		end
+			if LastClicked then
+				LastClicked.BackgroundTransparency = 1
+				LastClicked = nil
+			end
 
-		table.clear(SelectedFoods)
+			table.clear(SelectedFoods)
+		end)
 	end)
 	FuseSelectTrove:Add(FuseButtonConnection)
 	return FuseSelectTrove

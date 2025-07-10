@@ -15,7 +15,7 @@ local function fusionInit()
 	local FuseSelectTrove = FuseSelectionInit()
 
 	GenerateRecipeListInit(fuseEvents:WaitForChild("GetRecipeList"), RecipeList,
-	ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RecipeTemplate"))
+		ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RecipeTemplate"))
 
 	local function CleanupFusion()
 		FuseSelectTrove:Clean()
