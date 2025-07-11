@@ -8,15 +8,25 @@ local renderInven = require(script.Parent.inventoryRender)
 local InventoryDefaultButtonInit = require(script.Parent.inventoryDefaultButton)
 local pageRender = require(script.Parent.pageRender)
 
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local inventoryUpdateRemote = replicatedStorage.Events.Rng.updateInventory
+
 local page = 1
+
+local sort = "rarity"
 
 local function InventoryInit()
 	--Params: (sorting category, owned: boolean)
-	renderInven("rarity", true, page)
-	page = pageRender(page, "rarity")
+	renderInven(sort, true, page)
+	page = pageRender(page, sort)
 
 	--Params: (InventoryDefaultButton, InventoryGui)
 	InventoryDefaultButtonInit(DefaultGui:WaitForChild("InventoryButton"), InventoryGui)
+end
+
+inventoryUpdateRemote.OnClientInvoke = function()
+	print("updated because of remote")
+	renderInven(sort, true, page)
 end
 
 return InventoryInit

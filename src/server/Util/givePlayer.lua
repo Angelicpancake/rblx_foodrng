@@ -7,6 +7,9 @@
 local getPlayerMap = require(script.Parent.Parent.Data.playerDataMap)
 local foodObj = require(script.Parent.Parent.Foods.FoodUtil.foodObject)
 
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local updateInventoryRemote = replicatedStorage.Events.Rng.updateInventory
+
 function givePlayer(foodName: string, chance: string, player: Player)
 	local PlayerMap = getPlayerMap.RuntimeGetPlayerData(player.UserId)
 	local existingItem = player:WaitForChild("Inventory"):WaitForChild("Food"):FindFirstChild(foodName)
@@ -34,6 +37,8 @@ function givePlayer(foodName: string, chance: string, player: Player)
 	end
 
 	getPlayerMap.RuntimeSetPlayerData(player.UserId, PlayerMap)
+
+	updateInventoryRemote:InvokeClient(player) --tell
 
 	return result
 end
