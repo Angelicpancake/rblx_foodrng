@@ -26,6 +26,9 @@ function givePlayer(foodName: string, chance: string, player: Player)
 	else
 		--player map
 		PlayerMap.Inventory.Food[foodName] = {}
+		local food = PlayerMap.Inventory.Food[foodName]
+		food.Quantity = 1
+		food.Rarity = chance
 
 		foodObj(player, foodName, chance, 1)
 	end

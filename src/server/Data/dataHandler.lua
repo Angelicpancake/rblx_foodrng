@@ -4,7 +4,7 @@
 ]]
 
 local DataStoreService = game:GetService("DataStoreService")
-local dataStore = DataStoreService:GetDataStore("playerData", "26") --for testing
+local dataStore = DataStoreService:GetDataStore("playerData", "28") --for testing
 
 local onPlayerJoined = require(script.Parent.playerJoined) --function onPlayerJoined(player, dataStore)
 local onPlayerLeft = require(script.Parent:WaitForChild("saving").playerLeft)
