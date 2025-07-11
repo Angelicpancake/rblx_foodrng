@@ -12,11 +12,12 @@ local PlayerDataTypes = require(script.Parent.playerDataTypes)
 local PlayerDataTemplate = require(script.Parent.playerDataTemplate) --player data template
 local deepCopy = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util").deepCopy) --deep copy function
 local PlayerDataFuncs = require(script.Parent.playerDataMap)
-local DataReadyEvent: BindableEvent = replicatedStorage:WaitForChild("Events"):WaitForChild("Data"):WaitForChild("dataReadyEvent")
+local DataReadyEvent: BindableEvent =
+	replicatedStorage:WaitForChild("Events"):WaitForChild("Data"):WaitForChild("dataReadyEvent")
 
 local function addToPlayer(parent: Player | Folder, DataObj: PlayerDataTypes.PlayerDataType)
 	for key, value in pairs(DataObj) do
-		if type(value) == "table" then 
+		if type(value) == "table" then
 			local folder = Instance.new("Folder", parent)
 			folder.Name = key
 			addToPlayer(folder, value) --copy the values within the table value
@@ -33,22 +34,22 @@ local function addToPlayer(parent: Player | Folder, DataObj: PlayerDataTypes.Pla
 end
 
 local function MigratePlayerData(playerData, template)
-    -- Ensure playerData exists
-    for key, value in pairs(template) do
-        -- Check if the template value is a table
-        if type(value) == "table" then
-            -- Initialize nested table if it doesn't exist
-            playerData[key] = playerData[key] or {}
-            -- Recursively migrate nested tables
-            MigratePlayerData(playerData[key], value)
-        elseif playerData[key] == nil then
-            -- Copy default value if field doesn't exist
+	-- Ensure playerData exists
+	for key, value in pairs(template) do
+		-- Check if the template value is a table
+		if type(value) == "table" then
+			-- Initialize nested table if it doesn't exist
+			playerData[key] = playerData[key] or {}
+			-- Recursively migrate nested tables
+			MigratePlayerData(playerData[key], value)
+		elseif playerData[key] == nil then
+			-- Copy default value if field doesn't exist
 			print("Making new field for player", key, "->", value)
-            playerData[key] = value
-        end
-    end
-    
-    return playerData
+			playerData[key] = value
+		end
+	end
+
+	return playerData
 end
 
 local function onPlayerJoin(player, dataStore)
@@ -77,8 +78,9 @@ local function onPlayerJoin(player, dataStore)
 			playerData = newPlayerData
 		else
 			print("creating new data for player")
+
 			playerData = deepCopy(PlayerDataTemplate)
-			dataStore:SetAsync(userId, newPlayerData)
+			dataStore:SetAsync(userId, playerData)
 		end
 	end
 

@@ -1,0 +1,38 @@
+--[[ 
+    Give to player's inventory
+	Food Item
+		Food Rarity
+]]
+
+local getPlayerMap = require(script.Parent.Parent.Data.playerDataMap)
+local foodObj = require(script.Parent.Parent.Foods.FoodUtil.foodObject)
+
+function givePlayer(foodName: string, chance: string, player: Player)
+	local PlayerMap = getPlayerMap.RuntimeGetPlayerData(player.UserId)
+	local existingItem = player:WaitForChild("Inventory"):WaitForChild("Food"):FindFirstChild(foodName)
+	local result = ``
+
+	--print(PlayerMap)
+
+	if existingItem then
+		--player map
+		PlayerMap.Inventory.Food[foodName].Quantity += 1
+
+		local quan = existingItem:FindFirstChild("Quantity")
+
+		quan.Value += 1
+
+		result = `Updated {player.Name} {foodName} +=1`
+	else
+		--player map
+		PlayerMap.Inventory.Food[foodName] = {}
+
+		foodObj(player, foodName, chance, 1)
+	end
+
+	getPlayerMap.RuntimeSetPlayerData(player.UserId, PlayerMap)
+
+	return result
+end
+
+return givePlayer

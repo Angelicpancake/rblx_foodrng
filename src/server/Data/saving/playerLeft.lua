@@ -2,6 +2,7 @@
     save user data when they leave
 ]]
 local replicatedStorage = game:GetService("ReplicatedStorage")
+local getPlayerMap = require(script.Parent.Parent.playerDataMap)
 
 --[[
     go through the player's data folders and create a table based on those values. 
@@ -21,7 +22,28 @@ local function create(folder)
 	return result
 end
 
+--[[
+export type PlayerDataType = {
+	_DATAVERSION: number,
+	Inventory: InventoryDataType,
+	Profile: ProfileDataType,
+	Upgrades: UpgradeDataType,
+}]]
 local function onPlayerLeft(player, dataStore)
+	local userID = player.UserId
+
+	local success, err = pcall(function()
+		dataStore:SetAsync(userID, getPlayerMap.RuntimeGetPlayerData(userID))
+	end)
+
+	if success then
+		print("succesfully saved data")
+	else
+		warn("Failed to save data on leave")
+	end
+
+	print("on-leave", getPlayerMap.RuntimeGetPlayerData(userID))
+
 	-- local userID = player.UserId
 	-- local savedData = {}
 

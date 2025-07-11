@@ -28,6 +28,15 @@ local rarityRank = {
 	Mythical = 6,
 }
 
+local rarityColor = {
+	Common = Color3.fromRGB(113, 111, 109), --gray
+	Uncommon = Color3.fromRGB(78, 132, 95), --green
+	Rare = Color3.fromRGB(40, 70, 105), --blue
+	Epic = Color3.fromRGB(71, 57, 87), --purple
+	Legendary = Color3.fromRGB(198, 139, 44), --gold
+	Mythical = Color3.fromRGB(137, 54, 71), --red
+}
+
 local function sortList(list: any, sorting: string)
 	if sorting == "rarity" then
 		table.sort(list, function(a, b)
@@ -107,8 +116,9 @@ local function renderInventory(sorting: string, owned: boolean, currentPage: num
 		end
 
 		itemClone.ItemImage.ItemName.Text = foodItem
-		itemClone.ItemImage.ItemQuan.Text = quan
+		itemClone.ItemImage.ItemQuan.Text = `X{quan}`
 		itemClone.Parent = inventoryFrame.Scroll
+		itemClone.BackgroundColor3 = rarityColor[foodData.foodList[foodItem].rarity]
 	end
 end
 
