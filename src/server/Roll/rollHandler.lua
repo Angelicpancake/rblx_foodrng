@@ -10,9 +10,11 @@ local RollForFood = require(script.Parent.roll)
 
 local function RollingInit()
 	rollEvent.OnServerEvent:Connect(function(player)
-		local PlayerData = PlayerDataFuncs.RuntimeGetPlayerData(player.UserId)
-		local LuckBoost = PlayerData.Upgrades.LuckBoost
-		RollForFood(player, LuckBoost)
+		task.spawn(function()
+			local PlayerData = PlayerDataFuncs.RuntimeGetPlayerData(player.UserId)
+			local LuckBoost = PlayerData.Upgrades.LuckBoost
+			RollForFood(player, LuckBoost)
+		end)
 	end)
 end
 --get a random rarity

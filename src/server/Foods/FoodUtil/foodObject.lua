@@ -5,7 +5,7 @@
     Instance: Folder?, --? means optional
 }]]
 
-local function createFoodObject(player: Player, name: string, rarity: string, quantity: number)
+local function createFoodObject(player: Player, name: string, rarity: string, Stars: number, quantity: number)
 	local food = Instance.new("Folder", player:WaitForChild("Inventory"):WaitForChild("Food"))
 	food.Name = name
 
@@ -17,7 +17,11 @@ local function createFoodObject(player: Player, name: string, rarity: string, qu
 	quantityInstance.Name = "Quantity"
 	quantityInstance.Value = quantity
 
-	print(`Gave {player.Name} {name} of rarity {rarity}`)
+	local StarsInstance = Instance.new("NumberValue", food)
+	StarsInstance.Name = "Stars"
+	StarsInstance.Value = Stars
+
+	print(`Gave {player.Name} {name} of rarity {rarity} with {Stars} Stars`)
 end
 
 return createFoodObject

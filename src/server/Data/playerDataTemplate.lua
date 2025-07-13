@@ -1,8 +1,12 @@
 --!strict
-local PlayerDataTypes = require(script.Parent.playerDataTypes)
+local ServerScriptService = game:GetService("ServerScriptService")
+local Types = ServerScriptService:WaitForChild("Server"):WaitForChild("Types")
+local PlayerDataTypes = require(Types.playerDataTypes)
 
-local playerDataTemplate: PlayerDataTypes.PlayerDataType = {
-	_DATAVERSION = 1,
+local PlayerDataClass = {}
+
+local PlayerDataTemplate: PlayerDataTypes.PlayerDataType = {
+	_DATAVERSION = 3,
 	Inventory = {
 		Food = {},
 		Items = {},
@@ -13,8 +17,9 @@ local playerDataTemplate: PlayerDataTypes.PlayerDataType = {
 		FoodDex = 0,
 	},
 	Upgrades = {
-		LuckBoost = 0.00
-	}
+		LuckBoost = 0.00,
+		Bonuses = {}
+	},
 }
 
-return playerDataTemplate
+return PlayerDataTemplate

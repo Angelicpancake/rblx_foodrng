@@ -1,5 +1,7 @@
+local ServerScriptService = game:GetService("ServerScriptService")
 --!strict
-local PlayerDataTypes = require(script.Parent.playerDataTypes)
+local Types = ServerScriptService:WaitForChild("Server"):WaitForChild("Types")
+local PlayerDataTypes = require(Types.playerDataTypes)
 
 local PlayerDataMap: {[number]: PlayerDataTypes.PlayerDataType} = {}
 
@@ -13,6 +15,6 @@ local function RuntimeSetPlayerData(UserId: number, DataObj: PlayerDataTypes.Pla
 end
 
 return {
-    RuntimeGetPlayerData = RuntimeGetPlayerData, 
+    RuntimeGetPlayerData = RuntimeGetPlayerData,
     RuntimeSetPlayerData = RuntimeSetPlayerData
 }

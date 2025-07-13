@@ -5,10 +5,12 @@
 ]]
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 local t = require(replicatedStorage:WaitForChild("Packages").t)
 
 --playerDataTemplate contains type PlayerData
-local PlayerDataTypes = require(script.Parent.playerDataTypes)
+local Types = ServerScriptService:WaitForChild("Server"):WaitForChild("Types")
+local PlayerDataTypes = require(Types.playerDataTypes)
 local PlayerDataTemplate = require(script.Parent.playerDataTemplate) --player data template
 local deepCopy = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util").deepCopy) --deep copy function
 local PlayerDataFuncs = require(script.Parent.playerDataMap)
@@ -55,49 +57,42 @@ end
 local function onPlayerJoin(player, dataStore)
 	local userId = player.UserId --unique player id
 
-	local success, playerData = pcall(function()
+	local success, PlayerData = pcall(function()
 		return dataStore:GetAsync(userId)
 	end)
 
 	--if success failed: could not retrieve data from player's datastore
 	if not success then
-		error([[failed to load data for ${player.Name}]])
-	elseif not playerData then
+		local RetryCount = 1
+		error([[failed to load data for ${player.Name}, Retrying ${RetryCount}]])
+		while not success do
+			success, PlayerData = pcall(function()
+				return dataStore:GetAsync(userId)
+			end)
+			task.wait(5)
+		end
+	end
+
+	if not PlayerData then
 		print("creating new copy")
-
-		local secondSuccess, newPlayerData = pcall(function()
-			dataStore:GetAsync(userId)
-		end)
-
-		if not secondSuccess then
-			warn("Failed to save new data for", player.Name)
-			return
-		end
-
-		if type(newPlayerData) == "table" then
-			playerData = newPlayerData
-		else
-			print("creating new data for player")
-
-			playerData = deepCopy(PlayerDataTemplate)
-			dataStore:SetAsync(userId, playerData)
-		end
+		PlayerData = deepCopy(PlayerDataTemplate)
+		dataStore:SetAsync(userId, PlayerData)
 	end
 
-	if playerData._DATAVERSION ~= PlayerDataTemplate._DATAVERSION then
-		playerData = MigratePlayerData(playerData, PlayerDataTemplate)
-		dataStore:SetAsync(userId, playerData)
+	if PlayerData._DATAVERSION ~= PlayerDataTemplate._DATAVERSION then
+		print("wrong data verision, migrating")
+		--should migrate data here
 	end
 
-	if not PlayerDataTypes.PlayerDataTypeChecker(playerData) then
-		local Success, ErrorMessage = PlayerDataTypes.PlayerDataTypeChecker(playerData)
+	if not PlayerDataTypes.PlayerDataTypeChecker(PlayerData) then
+		local Success, ErrorMessage = PlayerDataTypes.PlayerDataTypeChecker(PlayerData)
 		print("corrupted data, rolling back", ErrorMessage)
-		--go to previous versions
+		--go to previous saved data
 	end
 
-	print("Player Data:", playerData)
-	addToPlayer(player, playerData)
-	PlayerDataFuncs.RuntimeSetPlayerData(player.UserId, playerData)
+	print("Player Data:", PlayerData)
+	addToPlayer(player, PlayerData)
+	PlayerDataFuncs.RuntimeSetPlayerData(player.UserId, PlayerData)
 	DataReadyEvent:Fire()
 end
 

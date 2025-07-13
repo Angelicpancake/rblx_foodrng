@@ -1,13 +1,17 @@
+--!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local t = require(ReplicatedStorage:WaitForChild("Packages").t)
 local ServerScriptService = game:GetService("ServerScriptService")
-local RarityList =
-	require(ServerScriptService:WaitForChild("Server"):WaitForChild("Foods"):WaitForChild("FoodUtil").rarityList)
-local ItemList =
-	require(ServerScriptService:WaitForChild("Server"):WaitForChild("Foods"):WaitForChild("FoodUtil").itemList)
+
+local FoodScripts = ServerScriptService:WaitForChild("Server"):WaitForChild("Foods"):WaitForChild("FoodUtil")
+local RarityList = require(FoodScripts.rarityList)
+local ItemList = require(FoodScripts.itemList)
+
+local Types = ServerScriptService:WaitForChild("Server"):WaitForChild("Types")
+local BonusDataTypes = require(Types.bonusDataTypes)
 
 export type InventoryDataType = {
-	Food: { [string]: { Quantity: number, Rarity: string } },
+	Food: { [string]: { Quantity: number, Rarity: string, Stars: number } },
 	Items: { string? },
 }
 
@@ -20,6 +24,7 @@ export type ProfileDataType = {
 export type UpgradeDataType = {
 	--LuckBoost is a decimal with 100 percent being 1.00
 	LuckBoost: number,
+	Bonuses: {BonusDataTypes.BonusDataType}
 }
 
 export type PlayerDataType = {
@@ -48,6 +53,7 @@ local PlayerDataTypeChecker = t.strictInterface({
 				t.interface({
 					Quantity = t.numberConstrained(0, math.huge), -- Non-negative
 					Rarity = t.union(table.unpack(Rarities)),
+					Stars = t.numberConstrained(0, 2)
 				})
 			) -- Specific values found in rarityList.lua
 		),
@@ -60,6 +66,12 @@ local PlayerDataTypeChecker = t.strictInterface({
 	}),
 	Upgrades = t.interface({
 		LuckBoost = t.numberConstrained(0, 10), -- Between 0 and 10
+		Bonuses = t.array(t.optional(t.interface({
+			Name = t.string,
+			Luck = t.number,
+			Stackable = t.optional(t.boolean),
+			Expiry = t.optional(t.number)
+		})))
 	}),
 })
 

@@ -27,14 +27,12 @@ end
 
 
 local function Roll(player: Player, LuckBoost: number)
-    task.spawn(function()
-        print("Rolling With A Luckboost of", LuckBoost, "%")
-        local Rarity = GetRarity(LuckBoost)
-        local FoodName = FoodList.foodByRarity[Rarity][math.random(1, #FoodList.foodByRarity[Rarity])]
-        -- random food from foodList
+    print("Rolling With A Luckboost of", LuckBoost, "%")
+    local Rarity = GetRarity(LuckBoost)
+    local FoodName = FoodList.foodByRarity[Rarity][math.random(1, #FoodList.foodByRarity[Rarity])]
+    -- random food from foodList
 
-        print(Rarity, GivePlayer(FoodName, Rarity, player))
-    end)
+    print(Rarity, GivePlayer(FoodName, Rarity, player))
 end
 
 -- local function RollTest()

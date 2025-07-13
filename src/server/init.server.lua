@@ -15,11 +15,11 @@ local DataReadyEvent: BindableEvent = DataEvents.dataReadyEvent
 print("Hello world, from server!")
 
 Data.Start()
+RollingInit()
+Fusion.Start()
 
 DataReadyEvent.Event:Connect(function()
 	GetFoodList.OnServerInvoke = function(player) return FoodData end--send table to client
-	RollingInit()
-	Fusion.Start()
 end)
 
 print("Server, execution ended")
