@@ -9,7 +9,7 @@ local InventoryDefaultButtonInit = require(script.Parent.inventoryDefaultButton)
 local pageRender = require(script.Parent.pageRender)
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
-local inventoryUpdateRemote = replicatedStorage.Events.Rng.updateInventory
+local inventoryUpdateRemote = replicatedStorage.Events.Rng.UpdateInventory
 
 local page = 1
 

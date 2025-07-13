@@ -11,7 +11,7 @@ local UpdateFoodCollectionBonuses = require(ServerScriptService:WaitForChild("Se
 	WaitForChild("Collection"):WaitForChild("General").collectionTotalFood)
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
-local updateInventoryRemote = replicatedStorage.Events.Rng.updateInventory
+local updateInventoryRemote = replicatedStorage.Events.Rng.UpdateInventory
 
 function givePlayer(foodName: string, chance: string, player: Player)
 	local PlayerMap = getPlayerMap.RuntimeGetPlayerData(player.UserId)
@@ -21,7 +21,8 @@ function givePlayer(foodName: string, chance: string, player: Player)
 	--print(PlayerMap)
 
 	if existingItem then
-		local FoodOnPlayer = player:FindFirstChild("Inventory"):FindFirstChild("Food"):FindFirstChild(foodName)
+		local ClientInventory = assert(player:FindFirstChild("Inventory"))
+		local FoodOnPlayer = assert(ClientInventory:FindFirstChild("Food"):FindFirstChild(foodName))
 		--player map
 		PlayerMap.Inventory.Food[foodName].Quantity += 1
 

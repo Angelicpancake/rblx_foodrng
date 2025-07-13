@@ -93,7 +93,6 @@ local function onPlayerJoin(player, dataStore)
 	print("Player Data:", PlayerData)
 	addToPlayer(player, PlayerData)
 	PlayerDataFuncs.RuntimeSetPlayerData(player.UserId, PlayerData)
-	DataReadyEvent:Fire()
 end
 
 return onPlayerJoin

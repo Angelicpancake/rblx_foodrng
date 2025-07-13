@@ -3,23 +3,18 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Fusion = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Fusion").fusionHandlerServer)
 local Data = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Data").dataHandler)
 local RollingInit = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Roll").rollHandler)
-
-local Events = ReplicatedStorage:WaitForChild("Events")
-
-local DataEvents = Events:WaitForChild("Data")
+local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerFuncs)
 
 local FoodData = require(script.Foods.FoodUtil.foodSource)
 local GetFoodList = ReplicatedStorage.Events.Rng.GetFoodList
-local DataReadyEvent: BindableEvent = DataEvents.dataReadyEvent
 
 print("Hello world, from server!")
 
 Data.Start()
 RollingInit()
 Fusion.Start()
+TimerFuncs.RunTimer()
 
-DataReadyEvent.Event:Connect(function()
-	GetFoodList.OnServerInvoke = function(player) return FoodData end--send table to client
-end)
+GetFoodList.OnServerInvoke = function(player) return FoodData end--send table to client
 
 print("Server, execution ended")

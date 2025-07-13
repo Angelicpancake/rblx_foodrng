@@ -3,7 +3,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local RuntimeDataFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Data").playerDataMap)
 local t = require(ReplicatedStorage:WaitForChild("Packages").t)
 
-local function RecalculateBonus(UserId: string)
+local function RecalculateBonus(UserId: number)
     print("what")
     local PlayerData = RuntimeDataFuncs.RuntimeGetPlayerData(UserId)
     local Total = 0

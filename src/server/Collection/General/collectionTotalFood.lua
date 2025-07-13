@@ -22,7 +22,7 @@ local FoodBonuses: FoodBonusType = {
     { Threshold = 25, Bonus = { Name = "TotalFood25", Luck = 0.1, Stackable = false } }
 }
 
-local function UpdateFoodCollectionBonuses(TotalFoods: number, UserId: string)
+local function UpdateFoodCollectionBonuses(TotalFoods: number, UserId: number)
     print(TotalFoods)
     for _, FoodBonus in FoodBonuses do
         if TotalFoods == FoodBonus.Threshold then
