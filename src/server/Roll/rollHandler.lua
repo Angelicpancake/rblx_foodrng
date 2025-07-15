@@ -8,16 +8,16 @@ local PlayerDataFuncs = require(ServerScriptService:WaitForChild("Server"):WaitF
 
 local RollForFood = require(script.Parent.roll)
 
-local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerFuncs)
+local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerManager)
 
 local function RollingInit()
 	rollEvent.OnServerEvent:Connect(function(player)
 		task.spawn(function()
-			TimerFuncs.AddEvent({
+			TimerFuncs.AddTimer({
 				Type = "Bonus",
 				Name = "TestEvent",
-				Time = os.clock() + 10,
-			}, player.UserId)
+				Time = 3,
+			})
 			local PlayerData = PlayerDataFuncs.RuntimeGetPlayerData(player.UserId)
 			local LuckBoost = PlayerData.Upgrades.LuckBoost
 			RollForFood(player, LuckBoost)

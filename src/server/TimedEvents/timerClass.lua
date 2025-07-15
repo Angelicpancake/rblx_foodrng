@@ -1,11 +1,13 @@
 local Timer = {}
 Timer.__index = Timer
 
-function Timer.new()
+export type TimerType = typeof(setmetatable({}, Timer))
+
+function Timer.New()
 	local self = setmetatable({}, Timer)
 
 	self._finishedEvent = Instance.new("BindableEvent")
-	self.finished = self._finishedEvent.Event
+	self.Finished = self._finishedEvent.Event
 
 	self._running = false
 	self._startTime = nil
@@ -14,7 +16,7 @@ function Timer.new()
 	return self
 end
 
-function Timer:start(duration)
+function Timer:Start(duration: number)
 	if not self._running then
 		task.spawn(function()
 			self._running = true
@@ -34,7 +36,7 @@ function Timer:start(duration)
 	end
 end
 
-function Timer:getTimeLeft()
+function Timer:GetTimeLeft()
 	if self._running then
 		local now = tick()
 		local timeLeft = self._startTime + self._duration - now
@@ -48,12 +50,26 @@ function Timer:getTimeLeft()
 	end
 end
 
-function Timer:isRunning()
+function Timer:IsRunning()
 	return self._running
 end
 
-function Timer:stop()
+function Timer:Stop()
 	self._running = false
+end
+
+function Timer:Destroy()
+	if self._finishedEvent then
+		self._finishedEvent:Destroy()
+		self._finishedEvent = nil
+	end
+
+	self.Finished = nil
+	self._running = nil
+	self._startTime = nil
+	self._duration = nil
+
+	setmetatable(self, nil)
 end
 
 return Timer

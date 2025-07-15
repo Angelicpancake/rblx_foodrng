@@ -9,7 +9,7 @@ local BonusDataTypes = require(Types.bonusDataTypes)
 
 local RuntimeDataFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Data").playerDataMap)
 local Util = ServerScriptService:WaitForChild("Server"):WaitForChild("Util")
-local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerFuncs)
+local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerManager)
 
 local function GivePlayerBonus(GivenBonus: BonusDataTypes.BonusDataType, UserId: number)
     print(GivenBonus)
@@ -26,7 +26,7 @@ local function GivePlayerBonus(GivenBonus: BonusDataTypes.BonusDataType, UserId:
     table.insert(CurrentBonuses, GivenBonus)
     RecalculateBonus(UserId)
     if GivenBonus.ExpiryEvent then
-        TimerFuncs.AddEvent(GivenBonus.ExpiryEvent, tostring(UserId))
+        TimerFuncs.AddTimer(GivenBonus.ExpiryEvent)
     end
 end
 
