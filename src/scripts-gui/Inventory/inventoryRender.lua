@@ -121,6 +121,7 @@ local function renderInventory(sorting: string, owned: boolean, currentPage: num
 		itemClone.ItemImage.ItemQuan.Text = `X{quan}`
 		itemClone.Parent = inventoryFrame.Scroll
 		itemClone.BackgroundColor3 = rarityColor[foodData.foodList[foodItem].rarity]
+		itemClone.ItemImage.Image = foodData.foodList[foodItem].image or "rbxassetid://0" -- Fallback to a default image if not found
 	end
 end
 
