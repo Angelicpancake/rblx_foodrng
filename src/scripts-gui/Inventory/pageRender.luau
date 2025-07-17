@@ -5,17 +5,18 @@ local backButton = inventory.Back
 local renderInven = require(script.Parent.inventoryRender)
 
 local function pageInit(page: number, sort: string)
+	--getting rid of pages soon
 	nextButton.MouseButton1Click:Connect(function()
 		if page < 15 then
 			page += 1
-			renderInven(sort, true, page)
+			renderInven(sort, true, page, "")
 		end
 	end)
 
 	backButton.MouseButton1Click:Connect(function()
 		if page > 1 then
 			page -= 1
-			renderInven(sort, true, page)
+			renderInven(sort, true, page, "")
 		end
 	end)
 
