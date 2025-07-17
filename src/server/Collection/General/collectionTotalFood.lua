@@ -23,7 +23,6 @@ local FoodBonuses: FoodBonusType = {
 }
 
 local function UpdateFoodCollectionBonuses(TotalFoods: number, UserId: number)
-    print(TotalFoods)
     for _, FoodBonus in FoodBonuses do
         if TotalFoods == FoodBonus.Threshold then
             GivePlayerBonus(FoodBonus.Bonus, UserId)

@@ -25,7 +25,6 @@ local function InventoryInit()
 end
 
 inventoryUpdateRemote.OnClientInvoke = function()
-	print("updated because of remote")
 	renderInven(sort, true, page)
 end
 

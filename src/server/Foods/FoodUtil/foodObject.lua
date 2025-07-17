@@ -21,7 +21,7 @@ local function createFoodObject(player: Player, name: string, rarity: string, St
 	StarsInstance.Name = "Stars"
 	StarsInstance.Value = Stars
 
-	print(`Gave {player.Name} {name} of rarity {rarity} with {Stars} Stars`)
+	-- print(`Gave {player.Name} {name} of rarity {rarity} with {Stars} Stars`)
 end
 
 return createFoodObject

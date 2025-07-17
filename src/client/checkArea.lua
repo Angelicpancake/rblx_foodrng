@@ -13,8 +13,6 @@ local DefaultGui: ScreenGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("
 
 local WithinArea = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").withinArea)
 
-local currentlyWithin = false
-
 --[[
     Initializes function connectiosn to shop hitboxes which checks if the player is within them
 ]]--
@@ -22,22 +20,17 @@ local function CheckAreaInit()
     task.spawn(function()
         local FusionShopDistance = 20
         while true do
-            if currentlyWithin then
-                currentlyWithin = false
-                continue
-            end
-
             if WithinArea(FusionShopHitbox, FusionShopDistance) then
                 OpenExclusiveGui(FusionGui)
-                currentlyWithin = true
-            else
+                while WithinArea(FusionShopHitbox, FusionShopDistance) do
+                    task.wait()
+                end
                 OpenExclusiveGui(DefaultGui)
             end
 
             task.wait(0.1)
         end
     end)
-    currentlyWithin = true
 end
 
 return CheckAreaInit

@@ -1,4 +1,3 @@
-print("Hello world, from client!")
 -- main client entry point
 
 -- local Fusion = require(scripts:WaitForChild("Fusion").fusionHandlerClient)
@@ -6,7 +5,7 @@ print("Hello world, from client!")
 -- Fusion.Start()
 
 local CheckAreaInit = require(script.checkArea)
+local RollingClientInit = require(script:WaitForChild("Rolling").rollingHandlerClient)
 
 CheckAreaInit()
-
-print("client, execution ended")
+RollingClientInit()

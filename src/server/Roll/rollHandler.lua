@@ -3,25 +3,20 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Events = ReplicatedStorage:WaitForChild("Events")
 
 --local foodList = require(modules:WaitForChild("foodList"))
-local rollEvent = Events:WaitForChild("Rng"):WaitForChild("RollEvent")
+local RollEvent = Events:WaitForChild("Rng"):WaitForChild("RollEvent")
+local RollResultEvent: RemoteEvent = Events:WaitForChild("Rng"):WaitForChild("RollResultEvent")
 local PlayerDataFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Data").playerDataMap)
 
-local RollForFood = require(script.Parent.roll)
+local RollForFood = require(script.Parent.rollForFood)
 
 local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerManager)
 
 local function RollingInit()
-	rollEvent.OnServerEvent:Connect(function(player)
-		task.spawn(function()
-			TimerFuncs.AddTimer({
-				Type = "Bonus",
-				Name = "TestEvent",
-				Time = 3,
-			})
-			local PlayerData = PlayerDataFuncs.RuntimeGetPlayerData(player.UserId)
-			local LuckBoost = PlayerData.Upgrades.LuckBoost
-			RollForFood(player, LuckBoost)
-		end)
+	RollEvent.OnServerEvent:Connect(function(player)
+		local PlayerData = PlayerDataFuncs.RuntimeGetPlayerData(player.UserId)
+		local LuckBoost = PlayerData.Upgrades.LuckBoost
+		local FoodResult = RollForFood(player, LuckBoost)
+		RollResultEvent:FireClient(player, FoodResult)
 	end)
 end
 --get a random rarity

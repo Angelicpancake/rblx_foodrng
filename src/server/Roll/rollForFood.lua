@@ -32,7 +32,8 @@ local function Roll(player: Player, LuckBoost: number)
     local FoodName = FoodList.foodByRarity[Rarity][math.random(1, #FoodList.foodByRarity[Rarity])]
     -- random food from foodList
 
-    print(Rarity, GivePlayer(FoodName, Rarity, player))
+    GivePlayer(FoodName, Rarity, player)
+    return FoodName
 end
 
 -- local function RollTest()

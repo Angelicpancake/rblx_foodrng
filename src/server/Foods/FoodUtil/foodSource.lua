@@ -1,3 +1,8 @@
+--[[
+	TO DO:
+	Set values to food obj instead of food name in tables with rarity or country key
+]]
+
 local CoreScriptDebuggingManagerHelper = game:GetService("CoreScriptDebuggingManagerHelper")
 --[[
     source of truth for food

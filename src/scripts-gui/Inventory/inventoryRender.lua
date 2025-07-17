@@ -46,9 +46,9 @@ local function sortList(list: any, sorting: string)
 end
 
 local function renderInventory(sorting: string, owned: boolean, currentPage: number)
-	print(`curr page {currentPage}`)
+	-- print(`curr page {currentPage}`)
 	local inventoryData = player:WaitForChild("Inventory", 5)
-	print(`testing {inventoryData}`)
+	-- print(`testing {inventoryData}`)
 
 	if not inventoryData then
 		warn("No Inventory Folder within timeout")

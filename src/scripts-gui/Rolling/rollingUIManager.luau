@@ -6,12 +6,17 @@ local RollButton = DefaultGui:WaitForChild("RollButton")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Events = ReplicatedStorage:WaitForChild("Events")
-local RollEvent = Events:WaitForChild("Rng"):WaitForChild("RollEvent")
+
+local RngEvents = Events:WaitForChild("Rng")
+local RollEvent = RngEvents:WaitForChild("RollEvent")
+local RollResultEvent: RemoteEvent = RngEvents:WaitForChild("RollResultEvent")
 
 local RollingDefaultButtonInit = require(script.Parent.rollingDefaultButton)
+local RollingAnimationInit = require(script.Parent.Animation.AnimationHandler)
 
 local function RollingInit()
 	RollingDefaultButtonInit(RollButton, RollEvent)
+	RollingAnimationInit(RollResultEvent)
 end
 
 return RollingInit
