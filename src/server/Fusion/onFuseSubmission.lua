@@ -7,6 +7,10 @@ local t = require(ReplicatedStorage:WaitForChild("Packages").t)
 -- local FusionRecipes = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Foods"):
 -- WaitForChild("FoodUtil").fusionList)
 
+--handler for fuse submission to backend
+--sorts table lexicographically then concats items with '|' as a string
+--looks for key that matches concat string and returns value at key
+--does nothing rn
 local function OnFuseSubmissionInit()
     FuseClickedFunc.OnServerInvoke = function(player: Player, foods: {string})
         --fix later

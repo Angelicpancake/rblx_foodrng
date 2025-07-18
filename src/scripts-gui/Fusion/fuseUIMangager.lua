@@ -14,6 +14,7 @@ local GenerateRecipeListInit = require(script.Parent.generateRecipeList)
 local function fusionInit()
 	local FuseSelectTrove = FuseSelectionInit()
 
+	--get recipe list from backend, currently does nothing
 	GenerateRecipeListInit(fuseEvents:WaitForChild("GetRecipeList"), RecipeList,
 		ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RecipeTemplate"))
 

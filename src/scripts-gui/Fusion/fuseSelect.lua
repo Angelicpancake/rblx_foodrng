@@ -27,8 +27,11 @@ local function FusionSelectionInit()
 	end)
 
 	--observers.observeTag returns a function that cleanups observing when called
+	--initalizes observers for buttons labeled fusionItem
+	--should be revamped for new ui
 	local StopFuseObserving = Observers.observeTag("fusionItem", function(foodItem: ImageButton)
 		local OnFusionItemClick: () -> nil = nil
+		--case if imagebutton is in the recipe menu
 		if foodItem:GetAttribute("fusionType") == "recipeMenu" then
 			OnFusionItemClick = function()
 				table.clear(SelectedFoods)
@@ -50,6 +53,7 @@ local function FusionSelectionInit()
 				local Food2Name = assert( Food2:GetAttribute("Name"), "Could not get name attribute from food2") :: string
 				SelectedFoods = { Food1Name , Food2Name }
 			end
+		--case if image button is in inventory
 		elseif foodItem:GetAttribute("fusionType") == "Inventory" then
 			OnFusionItemClick = function()
 				local Food = assert(foodItem.Parent, "could not retrieve foodItem parent")
@@ -91,6 +95,7 @@ local function FusionSelectionInit()
 	end, AllowedAncestors)
 	FuseSelectTrove:Add(StopFuseObserving)
 
+	--send fusion items to backend
 	local FuseButtonConnection = FuseButton.MouseButton1Click:Connect(function()
 		task.spawn(function()
 			local result = FuseButtonCallback:InvokeServer(SelectedFoods)
