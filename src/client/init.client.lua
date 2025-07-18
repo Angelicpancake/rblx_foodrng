@@ -1,12 +1,10 @@
-print("Hello world, from client!")
--- main client entry point
+--[[
+    initialize all client modular scripts
+]]
+local FusionHandler = require(script.Fusion.fusionHandlerClient)
+local CheckArea = require(script.checkArea)
 
--- local Fusion = require(scripts:WaitForChild("Fusion").fusionHandlerClient)
-
--- Fusion.Start()
-
-local CheckAreaInit = require(script.checkArea)
-
-CheckAreaInit()
+FusionHandler.init()
+CheckArea()
 
 print("client, execution ended")

@@ -4,7 +4,7 @@ local root = character:WaitForChild("HumanoidRootPart")
 
 local function withinArea(AreaRoot: BasePart, MaxRange: number)
 	local distance = (AreaRoot.Position - root.Position).Magnitude
-
+	print(distance)
 	if distance < MaxRange then
 		return true
 	else

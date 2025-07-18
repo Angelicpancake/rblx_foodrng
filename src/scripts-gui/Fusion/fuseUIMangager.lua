@@ -1,4 +1,4 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+--[[local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Trove = require(ReplicatedStorage:WaitForChild("Packages").Trove)
 
 local Players = game:GetService("Players")
@@ -24,4 +24,6 @@ local function fusionInit()
 	return CleanupFusion
 end
 
-return fusionInit
+return fusionInit]]
+
+return ""

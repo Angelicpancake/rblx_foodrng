@@ -1,43 +1,36 @@
-local ProximityPromptService = game:GetService("ProximityPromptService")
+--[[
+    This script checks if the player is within a specific shop area through async functions
+]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
-local locPlayer = Players.LocalPlayer
-
-local FusionShopHitbox: Part = Workspace:WaitForChild("Shops"):WaitForChild("FusionHitbox")
+local LocalPlayer = Players.LocalPlayer
 
 local OpenExclusiveGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").openExclusiveGui)
-local FusionGui: ScreenGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
-local DefaultGui: ScreenGui = locPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
-
 local WithinArea = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").withinArea)
 
-local currentlyWithin = false
+local FusionShopHitbox: Part = Workspace:WaitForChild("Shops"):WaitForChild("FusionHitbox")
+local FusionGui: ScreenGui = LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
+local DefaultGui: ScreenGui = LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
 
---[[
-    Initializes function connectiosn to shop hitboxes which checks if the player is within them
-]]--
+local function FusionAreaCheck()
+	if WithinArea(FusionShopHitbox, FusionShopHitbox.Size.X / 2) then
+		OpenExclusiveGui(FusionGui)
+		while WithinArea(FusionShopHitbox, FusionShopHitbox.Size.X / 2) do
+			task.wait()
+		end
+		OpenExclusiveGui(DefaultGui)
+	end
+end
+
 local function CheckAreaInit()
-    task.spawn(function()
-        local FusionShopDistance = 20
-        while true do
-            if currentlyWithin then
-                currentlyWithin = false
-                continue
-            end
+	task.spawn(function()
+		while true do
+			FusionAreaCheck()
 
-            if WithinArea(FusionShopHitbox, FusionShopDistance) then
-                OpenExclusiveGui(FusionGui)
-                currentlyWithin = true
-            else
-                OpenExclusiveGui(DefaultGui)
-            end
-
-            task.wait(0.1)
-        end
-    end)
-    currentlyWithin = true
+			task.wait(0.15)
+		end --while
+	end)
 end
 
 return CheckAreaInit

@@ -6,4 +6,4 @@ InventoryInit()
 RollingInit()
 
 --FusionInit returns a function to clean all connections and tables
-local CleanupFusion = FusionInit()
+--local CleanupFusion = FusionInit()

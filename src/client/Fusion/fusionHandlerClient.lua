@@ -1,11 +1,10 @@
-local RunService = game:GetService("RunService")
+--[[
+	handle all fusion client scripts
+]]
+local Fusion = {}
 
--- local checkFusionEntered = require(script.Parent.fusionEnteredArea)
-
-local fusion = {}
-
-function fusion.Start()
-	-- RunService.RenderStepped:Connect(checkFusionEntered)
+function Fusion.init()
+	print("Fusion client initialized")
 end
 
-return fusion
+return Fusion
