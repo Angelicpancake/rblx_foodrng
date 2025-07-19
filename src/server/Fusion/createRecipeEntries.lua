@@ -11,6 +11,7 @@ local FusionList = FoodData.fusionList
 type RecipeEntry = {
 	--recipe hashmap: name, quantity, stars, rarity, image
 	Food: { [string]: { quantity: number, stars: number, rarity: string, image: ImageLabel } },
+	Image: ImageLabel,
 }
 
 local Entries: { [string]: RecipeEntry } = {}
@@ -23,6 +24,7 @@ local Entries: { [string]: RecipeEntry } = {}
             rarity = string,
             image = ImageLabel
         }
+    Image
     }
 }
 ]]
@@ -33,6 +35,7 @@ local function CreateRecipeEntries(userID: number): { [string]: RecipeEntry }
 	for recipe, info in pairs(FusionList) do
 		Entries[info.name] = {
 			Food = {},
+			Image = FoodData.foodList[info.name].image or "rbxassetid://0",
 		}
 
 		local ingredients = string.split(recipe, "|")

@@ -11,8 +11,8 @@ local Fusion = {}
 Fusion.RecipeList = {}
 
 local function FusionInit(player)
-	Fusion.RecipeList = FusionRender.renderRecipes(player)
-	print(Fusion.RecipeList)
+	--Fusion.RecipeList = FusionRender.renderRecipes(player)
+	--	print(Fusion.RecipeList)
 end
 
 return FusionInit

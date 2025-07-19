@@ -1,6 +1,7 @@
 --[[
     This script checks if the player is within a specific shop area through async functions
 ]]
+local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
@@ -10,12 +11,15 @@ local OpenExclusiveGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitFo
 local WithinArea = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").withinArea)
 
 local FusionShopHitbox: Part = Workspace:WaitForChild("Shops"):WaitForChild("FusionHitbox")
-local FusionGui: ScreenGui = LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
+local FusionGui = LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
 local DefaultGui: ScreenGui = LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
+
+local fusionRender = require(FusionGui.Parent:WaitForChild("Scripts-Gui").Fusion.fusionRender)
 
 local function FusionAreaCheck()
 	if WithinArea(FusionShopHitbox, FusionShopHitbox.Size.X / 2) then
 		OpenExclusiveGui(FusionGui)
+		fusionRender.renderRecipes(LocalPlayer)
 		while WithinArea(FusionShopHitbox, FusionShopHitbox.Size.X / 2) do
 			task.wait()
 		end
