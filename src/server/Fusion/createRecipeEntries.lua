@@ -1,31 +1,56 @@
+--[[
+    This module will create a table of recipe entries with all necessary data for Fusion Gui
+    - Curretly players will all see the same recipes. Later on if need be, we can make it specific to each player
+]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Template: Frame = ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates").RecipeTemplate
+local FoodData = require(script.Parent.Parent.Foods.FoodUtil.foodSource)
+local PlayerMap = require(script.Parent.Parent.Data.playerDataMap)
 
-local Icons = require(script.Parent.Parent:WaitForChild("Foods"):WaitForChild("FoodUtil").foodIconMap)
+local FusionList = FoodData.fusionList
 
--- local Fusions = require(script.Parent.Parent:WaitForChild("Foods"):WaitForChild("FoodUtil").fusionList)
+type RecipeEntry = {
+	--recipe hashmap: name, quantity, stars, rarity, image
+	Food: { [string]: { quantity: number, stars: number, rarity: string, image: ImageLabel } },
+}
 
-local function CreateRecipeEntries()
-    -- local Entries = {}
-    -- for Key, FusionName in Fusions do
+local Entries: { [string]: RecipeEntry } = {}
 
-    --     --string table of ingredients
-    --     local Ingredients = string.split(Key, "|")
-    --     local Clone = Template:Clone()
+--[[format Entries[FoodFusionName] = {
+    Food = {
+        [FoodName] = {
+            quantity = number,
+            stars = number,
+            rarity = string,
+            image = ImageLabel
+        }
+    }
+}
+]]
+local function CreateRecipeEntries(userID: number): { [string]: RecipeEntry }
+	local PlayerData = PlayerMap.RuntimeGetPlayerData(userID)
+	local foodInventory = PlayerData.Inventory.Food
 
-    --     --assign emtpy string if no image
-    --     local F1Image = Icons[Ingredients[1]] or ""
-    --     local F2Image = Icons[Ingredients[2]] or ""
-    --     local FResImage = Icons[FusionName] or ""
+	for recipe, info in pairs(FusionList) do
+		Entries[info.name] = {
+			Food = {},
+		}
 
-    --     table.insert(Entries, {
-    --         Food1 = {Name = Ingredients[1], Image = F1Image},
-    --         Food2 = {Name = Ingredients[2], Image = F2Image},
-    --         FusionResult = {Name = FusionName, Image = FResImage} 
-    --     })
-    -- end
+		local ingredients = string.split(recipe, "|")
+		for _, v in ipairs(ingredients) do
+			Entries[info.name].Food[v] = {
+				quantity = 0, --placeholder
+				stars = 0, --placeholder
+				rarity = FoodData.foodList[v].rarity,
+				image = FoodData.foodList[v].image or "rbxassetid://0",
+			}
+			--owned food
+			if foodInventory[v] then
+				Entries[info.name].Food[v].quantity = foodInventory[v].Quantity
+			end
+		end --for loop
+	end
 
-    -- return Entries
+	return Entries
 end
 
 return CreateRecipeEntries

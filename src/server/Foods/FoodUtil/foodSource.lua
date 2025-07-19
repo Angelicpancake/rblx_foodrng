@@ -31,7 +31,7 @@ local fusionList: { fusionObj } = {
 	["100-Year Soy Sauce|Ramen"] = { name = "Naruto’s Ichiraku Ramen", rarity = "Mythical", country = "Japan" }, --fusion
 	["Gimbap|Onigiri|White Rice"] = { name = "Bizzarre Onigiri", rarity = "Mythical", country = "Japan" }, --fusion
 	["Jam|Waffle|Wagashi Jelly"] = { name = "Slime Waffle", rarity = "Mythical", country = "USA" },
-	["Mapo Tofu|Sundubu|Spicy God Ramyeon"] = { name = "Arise Sundubu", rarity = "Mythical", country = "Korea" },
+	["Mapo Tofu|Hot Pot|Spicy God Ramyeon"] = { name = "Arise Sundubu", rarity = "Mythical", country = "Korea" },
 	["Baozi|Kimchi|Osechi Ryori"] = { name = "MC Dumpling", rarity = "Mythical", country = "China" },
 	["Gabagool Requiem|NYC Pizza|Whale Sashimi"] = {
 		name = "Tralalero Tralala Cappuccino Assassino",
