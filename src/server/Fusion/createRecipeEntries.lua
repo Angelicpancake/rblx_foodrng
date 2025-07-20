@@ -5,13 +5,14 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local FoodData = require(script.Parent.Parent.Foods.FoodUtil.foodSource)
 local PlayerMap = require(script.Parent.Parent.Data.playerDataMap)
+local RarityList = require(script.Parent.Parent.Foods.FoodUtil.rarityList)
 
 local FusionList = FoodData.fusionList
 
 type RecipeEntry = {
 	--recipe hashmap: name, quantity, stars, rarity, image
-	Food: { [string]: { quantity: number, stars: number, rarity: string, image: ImageLabel } },
-	Image: ImageLabel,
+	Food: { [string]: { quantity: number, stars: number, rarity: string, image: string } },
+	Image: string,
 }
 
 local Entries: { [string]: RecipeEntry } = {}
