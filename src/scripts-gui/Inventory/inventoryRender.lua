@@ -10,8 +10,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local players = game:GetService("Players")
 local player = players.LocalPlayer
 
-local itemData = require(script.Parent.inventoryData)
 local inventoryFrame = script.Parent.Parent.Parent.InventoryGui.Inventory
+local PreviewFrame = inventoryFrame.PreviewFrame
 local template = inventoryFrame.Scroll.Template
 
 local getFoodList = ReplicatedStorage.Events.Rng.GetFoodList
@@ -45,8 +45,42 @@ local function sortList(list: any, sorting: string)
 	end
 end
 
-local function renderInventory(sorting: string, owned: boolean, currentPage: number)
-	-- print(`curr page {currentPage}`)
+local function createClone(foodItem: string, ownedSet: { [any]: any }, inventoryData: any)
+	local itemClone = template:Clone()
+	itemClone.Name = foodItem
+	itemClone.Visible = true
+
+	local quan
+
+	if ownedSet[foodItem] then
+		quan = inventoryData.Food:FindFirstChild(foodItem).Quantity.Value
+
+		itemClone.ItemImage.ItemName.Text = foodItem
+		itemClone.ItemImage.ImageTransparency = 0
+		itemClone.ItemImage.ImageColor3 = Color3.new(255, 255, 255)
+
+		itemClone.ItemImage.MouseButton1Click:Connect(function()
+			--PreviewFrame.Visible = true
+			print(`clicked on {foodItem}`)
+			PreviewFrame.ImageButton.Image = foodData.foodList[foodItem].image or "rbxassetid://0" -- Fallback to a default image if not found
+			PreviewFrame.ImageButton.ItemInfo.Text = foodItem
+		end)
+	else
+		quan = 0
+	end
+
+	itemClone.Name = foodItem
+	itemClone.ItemImage.ItemQuan.Text = `X{quan}`
+	itemClone.Parent = inventoryFrame.Scroll
+	itemClone.BackgroundColor3 = rarityColor[foodData.foodList[foodItem].rarity]
+	itemClone.ItemImage.Image = foodData.foodList[foodItem].image or "rbxassetid://0" -- Fallback to a default image if not found
+end
+
+local function renderInventory(sorting: string, owned: boolean, currentPage: number, query: string)
+	local dexLabel = inventoryFrame.DexLabel
+
+	PreviewFrame.Visible = false
+	print(`curr page {currentPage}`)
 	local inventoryData = player:WaitForChild("Inventory", 5)
 	-- print(`testing {inventoryData}`)
 
@@ -84,6 +118,9 @@ local function renderInventory(sorting: string, owned: boolean, currentPage: num
 		end
 	end
 
+	dexLabel.Text = `Dex: {#ownedList}/72` --total food is 72 currently
+	print(#ownedList)
+
 	sortList(ownedList, sorting)
 	sortList(unOwnedList, sorting)
 
@@ -95,32 +132,24 @@ local function renderInventory(sorting: string, owned: boolean, currentPage: num
 		table.insert(fullList, item)
 	end
 
-	local startIndex = (currentPage - 1) * foodPerPage + 1
-	local endIndex = startIndex + foodPerPage
+	if query == "" then
+		local startIndex = (currentPage - 1) * foodPerPage + 1
+		local endIndex = startIndex + foodPerPage - 1
 
-	if endIndex > #fullList then
-		endIndex = #fullList
-	end
-
-	for i = startIndex, endIndex do
-		local foodItem = fullList[i]
-
-		local itemClone = template:Clone()
-		itemClone.Name = foodItem
-		itemClone.Visible = true
-
-		local quan
-
-		if ownedSet[foodItem] then
-			quan = inventoryData.Food:FindFirstChild(foodItem).Quantity.Value
-		else
-			quan = 0
+		if endIndex > #fullList then
+			endIndex = #fullList
 		end
 
-		itemClone.ItemImage.ItemName.Text = foodItem
-		itemClone.ItemImage.ItemQuan.Text = `X{quan}`
-		itemClone.Parent = inventoryFrame.Scroll
-		itemClone.BackgroundColor3 = rarityColor[foodData.foodList[foodItem].rarity]
+		for i = startIndex, endIndex do
+			local foodItem = fullList[i]
+			createClone(foodItem, ownedSet, inventoryData)
+		end
+	else
+		for _, foodItem in ipairs(fullList) do
+			if string.find(string.lower(foodItem), query) then
+				createClone(foodItem, ownedSet, inventoryData)
+			end
+		end
 	end
 end
 

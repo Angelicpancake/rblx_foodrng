@@ -39,19 +39,15 @@ local function FusionSelectionInit()
 				local ParentFrame = assert(foodItem:FindFirstAncestorOfClass("Frame"), "Could not find Parent Frame")
 				print(ParentFrame.Name)
 
-				local Food1 = assert(
-					ParentFrame:FindFirstChild("Food1"),
-					"Food1 attribute access failed"
-				)
+				local Food1 = assert(ParentFrame:FindFirstChild("Food1"), "Food1 attribute access failed")
 
-				local Food2 = assert(
-					ParentFrame:FindFirstChild("Food2"),
-					"Food2 attribute access failed"
-				)
+				local Food2 = assert(ParentFrame:FindFirstChild("Food2"), "Food2 attribute access failed")
 
-				local Food1Name = assert( Food1:GetAttribute("Name"), "Could not get name attribute from food1") :: string
-				local Food2Name = assert( Food2:GetAttribute("Name"), "Could not get name attribute from food2") :: string
-				SelectedFoods = { Food1Name , Food2Name }
+				local Food1Name =
+					assert(Food1:GetAttribute("Name"), "Could not get name attribute from food1") :: string
+				local Food2Name =
+					assert(Food2:GetAttribute("Name"), "Could not get name attribute from food2") :: string
+				SelectedFoods = { Food1Name, Food2Name }
 			end
 		--case if image button is in inventory
 		elseif foodItem:GetAttribute("fusionType") == "Inventory" then

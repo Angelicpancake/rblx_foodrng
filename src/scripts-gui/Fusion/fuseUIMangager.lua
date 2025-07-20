@@ -1,28 +1,18 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Trove = require(ReplicatedStorage:WaitForChild("Packages").Trove)
-
+--[[
+	Fusion UI Handler Module
+	--Render Fusion
+]]
 local Players = game:GetService("Players")
-local FusionGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("FusionGui")
-local RecipeList = FusionGui:WaitForChild("MainFrame"):WaitForChild("RecipeList")
+local Player = Players.LocalPlayer
 
-local Events = ReplicatedStorage:WaitForChild("Events")
-local fuseEvents = Events:WaitForChild("Fusion")
+local FusionRender = require(script.Parent.fusionRender)
 
-local FuseSelectionInit = require(script.Parent.fuseSelect)
-local GenerateRecipeListInit = require(script.Parent.generateRecipeList)
+local Fusion = {}
+Fusion.RecipeList = {}
 
-local function fusionInit()
-	local FuseSelectTrove = FuseSelectionInit()
-
-	--get recipe list from backend, currently does nothing
-	GenerateRecipeListInit(fuseEvents:WaitForChild("GetRecipeList"), RecipeList,
-		ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RecipeTemplate"))
-
-	local function CleanupFusion()
-		FuseSelectTrove:Clean()
-	end
-
-	return CleanupFusion
+local function FusionInit(player)
+	--Fusion.RecipeList = FusionRender.renderRecipes(player)
+	--	print(Fusion.RecipeList)
 end
 
-return fusionInit
+return FusionInit

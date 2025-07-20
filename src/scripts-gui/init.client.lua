@@ -4,6 +4,7 @@ local FusionInit = require(script:WaitForChild("Fusion").fuseUIMangager)
 
 InventoryInit()
 RollingInit()
+FusionInit()
 
 --FusionInit returns a function to clean all connections and tables
-local CleanupFusion = FusionInit()
+--local CleanupFusion = FusionInit()

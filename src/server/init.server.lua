@@ -9,6 +9,10 @@ local GetFoodList = ReplicatedStorage.Events.Rng.GetFoodList
 
 Data.Start()
 RollingInit()
-Fusion.Start()
+Fusion.init()
 
-GetFoodList.OnServerInvoke = function(player) return FoodData end--send table to client
+GetFoodList.OnServerInvoke = function(player)
+	return FoodData
+end --send table to client
+
+print("Server, execution ended")

@@ -1,17 +1,21 @@
---!strict
+--[[
+    handle fusion scripts on server
+    - event that triggers returnning table of recipes
+]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Events = ReplicatedStorage:WaitForChild("Events")
-local FusionEvents = Events:WaitForChild("Fusion")
 
-local OnFuseSubmissionInit = require(script.Parent.onFuseSubmission)
-local RecipePlayerJoinInit = require(script.Parent.RecipePlayerJoinInit)
-local fusion = {}
+local Events = {}
+Events.GetRecipeList = ReplicatedStorage.Events.Fusion.GetRecipeList
 
-local GetRecipeListFunction = FusionEvents:WaitForChild("GetRecipeList")
+local CreateRecipeEntries = require(script.Parent.createRecipeEntries)
 
-function fusion.Start()
-    OnFuseSubmissionInit()
-    RecipePlayerJoinInit(GetRecipeListFunction)
+local Fusion = {}
+
+function Fusion.init()
+	Events.GetRecipeList.OnServerInvoke = function(player)
+		local userID = player.UserId
+		return CreateRecipeEntries(userID)
+	end
 end
 
-return fusion
+return Fusion
