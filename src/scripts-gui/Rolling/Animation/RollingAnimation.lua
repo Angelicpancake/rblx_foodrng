@@ -4,6 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local Trove = require(ReplicatedStorage:WaitForChild("Packages").Trove)
 local openExclusiveGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").openExclusiveGui)
+local openGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").openGui)
 
 local RollingAnimationGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("RollingAnimationGui")
 local DefaultGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
@@ -26,7 +27,6 @@ end
 
 local function PlayRollingAnimation()
     openExclusiveGui(RollingAnimationGui)
-
     BlurAnimation:Play()
     PanAnimation:Play()
     CurrInAnimation = true
