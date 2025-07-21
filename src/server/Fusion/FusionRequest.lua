@@ -13,10 +13,16 @@ local givePlayer = require(script.Parent.Parent.Util.givePlayer)
 	- Food
 	- Image
 ]]
+
+local BaseCost = 10
+
 local function OnFuseSubmissionInit(player, fusionInfo)
-	--	print(fusionInfo.fusionFood)
-	--	print(foodSource.foodList[fusionInfo.fusionFood].rarity)
-	--print(player)
+	for i, v in pairs(fusionInfo.info.Food) do
+		if v.quantity < BaseCost then
+			return "failed"
+		end
+	end
+
 	givePlayer(fusionInfo.fusionFood, foodSource.foodList[fusionInfo.fusionFood].rarity, player)
 	return "success"
 end
