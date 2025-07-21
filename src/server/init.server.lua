@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Fusion = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Fusion").fusionHandlerServer)
 local Data = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Data").dataHandler)
 local RollingInit = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Roll").rollHandler)
+local Upgrade = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Upgrade").upgradeHandler)
 
 local FoodData = require(script.Foods.FoodUtil.foodSource)
 local GetFoodList = ReplicatedStorage.Events.Rng.GetFoodList
@@ -10,6 +11,7 @@ local GetFoodList = ReplicatedStorage.Events.Rng.GetFoodList
 Data.Start()
 RollingInit()
 Fusion.init()
+Upgrade.init()
 
 GetFoodList.OnServerInvoke = function(player)
 	return FoodData

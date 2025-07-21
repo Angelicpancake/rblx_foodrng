@@ -1,0 +1,13 @@
+Upgrade functionality: 
+Upgrading food quantity is signficiantly lower for higher rarities. The cost grows exponentially with additional stars.
+
+Cost function:
+    Cost = (CurrStar + 1)(2^(CurrStar + 5)) / RarityDivFactor
+
+RarityDivFactor:
+    Common: 1
+    Uncomomn: 2
+    Rare: 3
+    Epic: 4
+    Legendary: 5
+    Mythical: 6
