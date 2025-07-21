@@ -15,6 +15,7 @@ local replicatedStorage = game:GetService("ReplicatedStorage")
 local updateInventoryRemote = replicatedStorage.Events.Rng.UpdateInventory
 
 function givePlayer(foodName: string, chance: string, player: Player)
+	print(foodName)
 	local PlayerMap = getPlayerMap.RuntimeGetPlayerData(player.UserId)
 	local existingItem = PlayerMap.Inventory.Food[foodName] ~= nil
 	local result = ``
