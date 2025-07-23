@@ -172,7 +172,7 @@ local Animation: PanAnimationTypes.AnimationType = {
                     self.LastHeightValue = self.HeightValue.Value
                     Pancake:TranslateBy(Vector3.new(0, HeightOffset, 0))
                     Pancake:PivotTo(Pancake.PrimaryPart.CFrame
-                        * CFrame.Angles(math.rad(0), math.rad(0), math.rad(10)))
+                        * CFrame.Angles(math.rad(0), math.rad(0), math.rad(10.25)))
                 end)
             end,
             Play = function(self)
@@ -205,6 +205,7 @@ local Animation: PanAnimationTypes.AnimationType = {
             local PCookingPan = CookingPan.PrimaryPart
             self.Components.FlippingAnimation.ModelsToRotate[Pancake] = Pancake
             local Remaining = self.Components.FlippingAnimation.RotationValue.Value - Pancake.PrimaryPart.Orientation.Z
+            print(Remaining)
             Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(
                 math.rad(0),
                 math.rad(0),
