@@ -1,4 +1,5 @@
 --!strict
+local PolicyService = game:GetService("PolicyService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local WorldModel: WorldModel = Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -66,6 +67,8 @@ local Animation: PanAnimationTypes.AnimationType = {
             end
         },
         FlippingAnimation = {
+            ModelsToRotate = {CookingPan, Pancake},
+            OriginalCFrames = {},
             UpDuration = 0.5,
             UpEasingStyle = Enum.EasingStyle.Back,
             UpEasingDirection = Enum.EasingDirection.In,
@@ -82,10 +85,13 @@ local Animation: PanAnimationTypes.AnimationType = {
             UpTweenConnection = nil :: RBXScriptConnection?,
             DownTweenConnection = nil :: RBXScriptConnection?,
             RotationValueConnection = nil :: RBXScriptConnection?,
-            Repeats = 3,
+            Repeats = 999,
             ShouldRepeat = false :: boolean,
             OriginalPanCFrame = CookingPan.PrimaryPart.CFrame,
             Init = function(self)
+                for _, Model in pairs(self.ModelsToRotate) do
+                    self.OriginalCFrames[Model.Name] = Model.PrimaryPart.CFrame
+                end
                 local UpTweenInfo = TweenInfo.new(self.UpDuration, self.UpEasingStyle, self.UpEasingDirection)
                 local UpGoal = { Value = -(self.UpTargetRotation + self.CurrentRotation) }
 
@@ -100,9 +106,11 @@ local Animation: PanAnimationTypes.AnimationType = {
                     end
                     local RotationLeft = self.RotationValue.Value - self.CurrentRotation
                     self.CurrentRotation = self.RotationValue.Value
-                    CookingPan:PivotTo(CookingPan.PrimaryPart.CFrame
-                        * CFrame.Angles(math.rad(0), math.rad(0), math.rad(RotationLeft))
-)                end)
+                    for _, Model in pairs(self.ModelsToRotate) do
+                        Model:PivotTo(Model.PrimaryPart.CFrame
+                            * CFrame.Angles(math.rad(0), math.rad(0), math.rad(RotationLeft)))
+                    end
+                end)
 
                 self.UpTweenConnection = self.UpTween.Completed:Connect(function()
                     if self.CurrRepeats < self.Repeats and self.ShouldRepeat then
@@ -129,7 +137,9 @@ local Animation: PanAnimationTypes.AnimationType = {
                 self.CurrentRotation = 0
                 self.CurrRepeats = 0
                 self.RotationValue.Value = 0
-                CookingPan:PivotTo(self.OriginalPanCFrame)
+                for _, Model in pairs(self.ModelsToRotate) do
+                    Model:PivotTo(self.OriginalCFrames[Model.Name])
+                end
                 return true
             end
         },
@@ -159,9 +169,10 @@ local Animation: PanAnimationTypes.AnimationType = {
 
                 self.HeightValueConnection = self.HeightValue:GetPropertyChangedSignal("Value"):Connect(function()
                     local HeightOffset = self.HeightValue.Value - self.LastHeightValue
-                    print(HeightOffset)
                     self.LastHeightValue = self.HeightValue.Value
                     Pancake:TranslateBy(Vector3.new(0, HeightOffset, 0))
+                    Pancake:PivotTo(Pancake.PrimaryPart.CFrame
+                        * CFrame.Angles(math.rad(0), math.rad(0), math.rad(10)))
                 end)
             end,
             Play = function(self)
@@ -186,8 +197,19 @@ local Animation: PanAnimationTypes.AnimationType = {
         self.Components.PancakeAnimation:Init()
         self.PancakeConnection = self.Components.FlippingAnimation.UpTween.Completed:Connect(function()
             if not self.Cleaning then
+                self.Components.FlippingAnimation.ModelsToRotate[Pancake] = nil
                 self.Components.PancakeAnimation:Play()
             end
+        end)
+        self.Components.PancakeAnimation.DownTween.Completed:Connect(function()
+            local PCookingPan = CookingPan.PrimaryPart
+            self.Components.FlippingAnimation.ModelsToRotate[Pancake] = Pancake
+            local Remaining = self.Components.FlippingAnimation.RotationValue.Value - Pancake.PrimaryPart.Orientation.Z
+            Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(
+                math.rad(0),
+                math.rad(0),
+                math.rad(Remaining)
+            ))
         end)
     end,
 
