@@ -69,10 +69,10 @@ local Animation: PanAnimationTypes.AnimationType = {
         FlippingAnimation = {
             ModelsToRotate = {CookingPan, Pancake},
             OriginalCFrames = {},
-            UpDuration = 0.5,
+            UpDuration = 0.7,
             UpEasingStyle = Enum.EasingStyle.Back,
             UpEasingDirection = Enum.EasingDirection.In,
-            DownDuration = 0.6,
+            DownDuration = 1,
             DownEasingStyle = Enum.EasingStyle.Back,
             DownEasingDirection = Enum.EasingDirection.In,
             UpTargetRotation = 30,
@@ -144,35 +144,72 @@ local Animation: PanAnimationTypes.AnimationType = {
             end
         },
         PancakeAnimation = {
-            UpDuration = 0.3,
-            UpEasingStyle = Enum.EasingStyle.Linear,
-            UpEasingDirection = Enum.EasingDirection.In,
-            DownDuration = 0.3,
-            DownEasingStyle = Enum.EasingStyle.Linear,
+            UpDuration = 0.5,
+            UpEasingStyle = Enum.EasingStyle.Quad,
+            UpEasingDirection = Enum.EasingDirection.Out,
+            DownDuration = 0.5,
+            DownEasingStyle = Enum.EasingStyle.Quad,
             DownEasingDirection = Enum.EasingDirection.In,
-            Duration = 0.8,
+            SquishUpDuration = 0.2,
+            SquishUpEasingStyle = Enum.EasingStyle.Quad,
+            SquishUpEasingDirection = Enum.EasingDirection.In,
+            SquishDownDuration = 0.4,
+            SquishDownEasingStyle = Enum.EasingStyle.Quad,
+            SquishDownEasingDirection = Enum.EasingDirection.Out,
             TargetHeight = 1,
+            TargetSquish = -0.145,
+            LastSquishValue = 0 :: number,
             LastHeightValue = 0 :: number,
             HeightValue = Instance.new("NumberValue") :: NumberValue,
+            SquishValue = Instance.new("NumberValue") :: NumberValue,
             UpTween = nil :: Tween?,
             DownTween = nil :: Tween?,
+            SquishDownTween = nil :: Tween?,
+            SquishUpTween = nil :: Tween?,
             HeightValueConnection = nil :: RBXScriptConnection?,
             OriginalCFrame = Pancake.PrimaryPart.CFrame,
+            --should change later to make more secure
+            Textures = Pancake.MeshPart:GetChildren(),
+            PancakeChildren = Pancake:GetChildren(),
             Init = function(self)
                 local UpTweenInfo = TweenInfo.new(self.UpDuration, self.UpEasingStyle, self.UpEasingDirection)
                 local UpGoal = { Value = self.TargetHeight }
                 local DownTweenInfo = TweenInfo.new(self.DownDuration, self.DownEasingStyle, self.DownEasingDirection)
                 local DownGoal = { Value = 0 }
+                local SquishUpTweenInfo = TweenInfo.new(self.SquishUpDuration, self.SquishUpEasingStyle, self.SquishUpEasingDirection)
+                local SquishUpGoal = { Value = 0 }
+                local SquishDownTweenInfo = TweenInfo.new(self.SquishDownDuration, self.SquishDownEasingStyle, self.SquishDownEasingDirection)
+                local SquishDownGoal = { Value = self.TargetSquish }
 
                 self.UpTween = TweenService:Create(self.HeightValue, UpTweenInfo, UpGoal)
                 self.DownTween = TweenService:Create(self.HeightValue, DownTweenInfo, DownGoal)
+                self.SquishDownTween = TweenService:Create(self.SquishValue, SquishDownTweenInfo, SquishDownGoal)
+                self.SquishUpTween = TweenService:Create(self.SquishValue, SquishUpTweenInfo, SquishUpGoal)
+
+                --should make this more descriptive later
+                self.DownTween.Completed:Connect(function()
+                    for _, Texture: Texture in ipairs(self.Textures) do
+                        -- Texture.Transparency -= 0.5
+                    end
+                end)
 
                 self.HeightValueConnection = self.HeightValue:GetPropertyChangedSignal("Value"):Connect(function()
                     local HeightOffset = self.HeightValue.Value - self.LastHeightValue
                     self.LastHeightValue = self.HeightValue.Value
                     Pancake:TranslateBy(Vector3.new(0, HeightOffset, 0))
                     Pancake:PivotTo(Pancake.PrimaryPart.CFrame
-                        * CFrame.Angles(math.rad(0), math.rad(0), math.rad(10.25)))
+                        * CFrame.Angles(math.rad(0), math.rad(0), math.rad(12)))
+                end)
+
+                self.SquishValueConnection = self.SquishValue:GetPropertyChangedSignal("Value"):Connect(function()
+                    local SquishValue = self.SquishValue.Value
+                    local YOffset = SquishValue - self.LastSquishValue
+                    self.LastSquishValue = SquishValue
+                    for _, Child in self.PancakeChildren do
+                        if Child.ClassName == "MeshPart" or Child.ClassName == "BasePart" then
+                            Child.Size += Vector3.new(-YOffset, YOffset, -YOffset)
+                        end
+                    end
                 end)
             end,
             Play = function(self)
@@ -180,12 +217,24 @@ local Animation: PanAnimationTypes.AnimationType = {
                 self.UpTween.Completed:Once(function()
                     self.DownTween:Play()
                 end)
+                self.DownTween.Completed:Once(function()
+                    self.SquishDownTween:Play()
+                end)
+                self.SquishDownTween.Completed:Once(function()
+                    self.SquishUpTween:Play()
+                end)
             end,
             Cleanup = function(self)
                 self.UpTween:Cancel()
                 self.DownTween:Cancel()
                 print("changed height value")
                 self.HeightValue.Value = 0
+                self.SquishValue.Value = 0
+                self.LastHeightValue = 0
+                self.LastSquishValue = 0
+                for _, Texture: Texture in ipairs(self.Textures) do
+                        Texture.Transparency = 1
+                end
                 return true
             end
         }
@@ -197,15 +246,13 @@ local Animation: PanAnimationTypes.AnimationType = {
         self.Components.PancakeAnimation:Init()
         self.PancakeConnection = self.Components.FlippingAnimation.UpTween.Completed:Connect(function()
             if not self.Cleaning then
-                self.Components.FlippingAnimation.ModelsToRotate[Pancake] = nil
                 self.Components.PancakeAnimation:Play()
+                self.Components.FlippingAnimation.ModelsToRotate[Pancake] = nil
             end
         end)
         self.Components.PancakeAnimation.DownTween.Completed:Connect(function()
-            local PCookingPan = CookingPan.PrimaryPart
             self.Components.FlippingAnimation.ModelsToRotate[Pancake] = Pancake
             local Remaining = self.Components.FlippingAnimation.RotationValue.Value - Pancake.PrimaryPart.Orientation.Z
-            print(Remaining)
             Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(
                 math.rad(0),
                 math.rad(0),
@@ -230,7 +277,6 @@ local Animation: PanAnimationTypes.AnimationType = {
         local Done2 = self.Components.ScalingAnimation:Cleanup()
         local Done3 = self.Components.PancakeAnimation:Cleanup()
         while not Done1 and not Done2 and not Done3 do
-            print("hi")
             task.wait(0.1)
         end
         self.Cleaning = false
