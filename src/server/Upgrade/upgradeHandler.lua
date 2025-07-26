@@ -3,9 +3,6 @@ local upgradeCost = require(script.Parent.upgradeCost)
 
 local Upgrade = {}
 
-Upgrade.init = function()
-	upgradeStars()
-	upgradeCost()
-end
+Upgrade.init = function() end
 
 return Upgrade

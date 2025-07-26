@@ -15,16 +15,18 @@ local RarityDiv = {
 Remotes.upgradeCost = ReplicatedStorage.Events.Upgrade.GetUpgradeCost
 
 --Cost = (CurrStar + 1)(2^(CurrStar + 5)) / RarityDivFactor
-local function upgradeCost()
-	Remotes.upgradeCost.OnServerInvoke = function(player, food)
-		local PlayerData = PlayerDataMap.RuntimeGetPlayerData(player.UserId)
-		local CurrStar = PlayerData.Inventory.Food[food].Stars
-		local Rarity = PlayerData.Inventory.Food[food].Rarity
+local function upgradeCost(player, food)
+	local PlayerData = PlayerDataMap.RuntimeGetPlayerData(player.UserId)
+	local CurrStar = PlayerData.Inventory.Food[food].Stars
+	local Rarity = PlayerData.Inventory.Food[food].Rarity
 
-		local result = math.floor(((CurrStar + 1) * (math.pow(2, (CurrStar + 5)))) / RarityDiv[Rarity])
-		print(result)
-		return result
-	end
+	local result = math.floor(((CurrStar + 1) * (math.pow(2, (CurrStar + 5)))) / RarityDiv[Rarity])
+	print(result)
+	return result
+end
+
+Remotes.upgradeCost.OnServerInvoke = function(player, food)
+	return upgradeCost(player, food)
 end
 
 return upgradeCost

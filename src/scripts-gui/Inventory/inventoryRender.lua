@@ -45,8 +45,9 @@ local UpgradeButton = Preview.UpgradeFrame.UpgradeButton
 
 local function openPreview(food: string)
 	Preview.Visible = true
-	Preview.ImageLabel.Image = foodData.foodList[food].image
-	for _, v in ipairs(Preview.Rarity:GetChildren()) do
+	UpgradeButton.Text = `UPGRADE`
+	Preview.Frame.ImageLabel.Image = foodData.foodList[food].image
+	for _, v in ipairs(Preview.Frame.Rarity:GetChildren()) do
 		v.BackgroundColor3 = rarityColor[foodData.foodList[food].rarity]
 	end
 
@@ -55,7 +56,10 @@ local function openPreview(food: string)
 	end)
 
 	UpgradeButton.MouseButton1Click:Connect(function()
-		Upgrade.ButtonInit()
+		local success = Upgrade.ButtonInit(food)
+		if success == "success" then
+			openPreview(food)
+		end
 	end)
 
 	local currStars = inventoryData.Food:FindFirstChild(food).Stars.Value
@@ -74,6 +78,11 @@ local function openPreview(food: string)
 	Preview.Info:WaitForChild("Origin").Text = `Origin: {foodData.foodList[food].country}`
 	Preview.Info:WaitForChild("Quan").Owned.Text = `Owned: x{inventoryData.Food:FindFirstChild(food).Quantity.Value}`
 	Preview.Info:WaitForChild("Quan").Upgrade.Text = `Upgrade: x{Upgrade.GetCost(food)}`
+
+	if currStars == 5 then
+		Preview.Info:WaitForChild("Quan").Upgrade.Text = `MAX 🔒`
+		UpgradeButton.Text = `MAX 🔒`
+	end
 end
 
 local function sortList(list: any, sorting: string)
@@ -90,7 +99,9 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 	itemClone.Visible = true
 
 	itemClone.Click.MouseButton1Click:Connect(function()
-		openPreview(foodItem)
+		if ownedSet[foodItem] then
+			openPreview(foodItem)
+		end
 	end)
 
 	local quan

@@ -6,10 +6,10 @@ Remotes.upgradeCost = ReplicatedStorage.Events.Upgrade.GetUpgradeCost
 
 local Upgrade = {}
 
-Upgrade.ButtonInit = function()
+Upgrade.ButtonInit = function(food)
 	print("clicked")
-	local success = Remotes.upgradeStar:InvokeServer()
-	print(success)
+	local success = Remotes.upgradeStar:InvokeServer(food)
+	return success
 end
 
 Upgrade.GetCost = function(food: string)
