@@ -14,6 +14,8 @@ local inventoryFrame = script.Parent.Parent.Parent.InventoryGui.Inventory
 local PreviewFrame = inventoryFrame.PreviewFrame
 local template = inventoryFrame.Scroll.Template
 
+local upgrade = require(script.Parent.Parent.Upgrade.upgradeDefaultButton)
+
 local getFoodList = ReplicatedStorage.Events.Rng.GetFoodList
 local foodData = getFoodList:InvokeServer() -- get foodlist from server
 
@@ -50,6 +52,11 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 	itemClone.Name = foodItem
 	itemClone.Visible = true
 
+	itemClone.Click.MouseButton1Click:Connect(function()
+		PreviewFrame.Visible = true
+		--upgrade()
+	end)
+
 	local quan
 
 	if ownedSet[foodItem] then
@@ -77,6 +84,7 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 end
 
 local function renderInventory(sorting: string, owned: boolean, currentPage: number, query: string)
+	inventoryFrame.PreviewFrame.Visible = false
 	local dexLabel = inventoryFrame.DexLabel
 
 	PreviewFrame.Visible = false

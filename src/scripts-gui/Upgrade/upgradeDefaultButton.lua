@@ -6,11 +6,9 @@ local Remotes = {}
 Remotes.upgradeStar = ReplicatedStorage.Events.Upgrade.UpgradeStar
 
 local function ButtonInit()
-	UpgradeButton.MouseButton1Click:Connect(function()
-		print("clicked")
-		local success = Remotes.upgradeStar:InvokeServer()
-		print(success)
-	end)
+	print("clicked")
+	local success = Remotes.upgradeStar:InvokeServer()
+	print(success)
 end
 
 return ButtonInit
