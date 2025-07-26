@@ -1,7 +1,5 @@
-local upgradeButton = require(script.Parent.upgradeDefaultButton)
+local Upgrade = require(script.Parent.upgradeDefaultButton)
 
-local function UpgradeInit()
-	upgradeButton()
-end
+local function UpgradeInit() end
 
 return UpgradeInit

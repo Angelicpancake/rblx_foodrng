@@ -1,14 +1,21 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UpgradeButton = script.Parent.Parent.Parent.DefaultGui.UpgradeButton
-
 local Remotes = {}
 
 Remotes.upgradeStar = ReplicatedStorage.Events.Upgrade.UpgradeStar
+Remotes.upgradeCost = ReplicatedStorage.Events.Upgrade.GetUpgradeCost
 
-local function ButtonInit()
+local Upgrade = {}
+
+Upgrade.ButtonInit = function()
 	print("clicked")
 	local success = Remotes.upgradeStar:InvokeServer()
 	print(success)
 end
 
-return ButtonInit
+Upgrade.GetCost = function(food: string)
+	print("get cost")
+	local cost = Remotes.upgradeCost:InvokeServer(food)
+	return cost
+end
+
+return Upgrade

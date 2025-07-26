@@ -11,3 +11,9 @@ RarityDivFactor:
     Epic: 4
     Legendary: 5
     Mythical: 6
+
+functions:
+
+upgradeHandler
+upgradeCost
+upgradeStars
