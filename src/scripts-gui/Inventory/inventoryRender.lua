@@ -51,6 +51,8 @@ local function openPreview(food: string)
 		v.BackgroundColor3 = rarityColor[foodData.foodList[food].rarity]
 	end
 
+	Preview.BackgroundColor3 = rarityColor[foodData.foodList[food].rarity]
+
 	BackButton.MouseButton1Click:Connect(function()
 		Preview.Visible = false
 	end)
@@ -120,7 +122,7 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 	end
 
 	itemClone.Name = foodItem
-	itemClone.ItemImage.ItemQuan.Text = `X{quan}`
+	itemClone.ItemImage.ItemQuan.Text = `x{quan}`
 	itemClone.Parent = inventoryFrame.Scroll
 	itemClone.BackgroundColor3 = rarityColor[foodData.foodList[foodItem].rarity]
 	itemClone.UIStroke.Color = rarityColor[foodData.foodList[foodItem].rarity]
@@ -192,15 +194,18 @@ local function renderInventory(sorting: string, owned: boolean, currentPage: num
 	end
 
 	if query == "" then
-		local startIndex = (currentPage - 1) * foodPerPage + 1
-		local endIndex = startIndex + foodPerPage - 1
+		--local startIndex = (currentPage - 1) * foodPerPage + 1
+		--local endIndex = startIndex + foodPerPage - 1
 
-		if endIndex > #fullList then
-			endIndex = #fullList
-		end
+		--	if endIndex > #fullList then
+		--endIndex = #fullList
+		--	end
 
-		for i = startIndex, endIndex do
-			local foodItem = fullList[i]
+		--	for i = startIndex, endIndex do
+		--	local foodItem = fullList[i]
+		--		createClone(foodItem, ownedSet, inventoryData)
+		--	end
+		for _, foodItem in ipairs(fullList) do
 			createClone(foodItem, ownedSet, inventoryData)
 		end
 	else
