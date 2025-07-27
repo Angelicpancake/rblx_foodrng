@@ -7,7 +7,7 @@ local function AnimationHandlerInit(RollResultEvent: RemoteEvent)
         local AboveRarityThreshold = true
 
         if AboveRarityThreshold then
-            RollingAnimation.PlayRollingAnimation()
+            RollingAnimation.PlayRollingAnimation("Legendary")
         end
     end)
 end

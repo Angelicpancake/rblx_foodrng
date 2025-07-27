@@ -1,285 +1,392 @@
---!strict
-local PolicyService = game:GetService("PolicyService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Trove = require(ReplicatedStorage:WaitForChild("Packages").Trove)
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local ViewportFrame = Players.LocalPlayer:WaitForChild("PlayerGui")
+    :WaitForChild("RollingAnimationGui"):WaitForChild("RollingViewportFrame")
 local WorldModel: WorldModel = Players.LocalPlayer:WaitForChild("PlayerGui")
     :WaitForChild("RollingAnimationGui"):WaitForChild("RollingViewportFrame"):WaitForChild("WorldModel")
-local CookingPan: Model = (WorldModel:WaitForChild("Cooking pan")) :: Model
-local Pancake: Model = (WorldModel:WaitForChild("Pancake")) :: Model
+
+local CookingPanTemplate = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("Cooking pan")) :: Model
+local PancakeTemplate = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("Pancake")) :: Model
+local RockParticleTemplate: Model = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RockParticle")) :: Model
+
+local CookingPan: Model = nil
+local Pancake: Model = nil
 
 local PanAnimationTypes = require(Players.LocalPlayer:WaitForChild("PlayerScripts")
     :WaitForChild("Client"):WaitForChild("Types").PanAnimationTypes)
 
 local Animation: PanAnimationTypes.AnimationType = {
+    _Trove = Trove.new(),
     Cleaning = false,
-    PancakeConnection = nil :: RBXScriptConnection?,
     Components = {
         ScalingAnimation = {
-            ModelsToScale = {CookingPan, Pancake},
-            TargetScales = {} :: {number},
-            InitialScales = {} :: {number},
+            ModelsToScale = {} :: {Model},
             Multiplier = 10,
             Duration = 0.8,
             EasingStyle = Enum.EasingStyle.Bounce,
             EasingDirection = Enum.EasingDirection.Out,
-            ScaleValues = {} :: {NumberValue},
-            Tweens = {} :: {Tween},
-            NumOfCompletedTweens = 0,
-            Completed = Instance.new("BindableEvent"),
+            _Trove = Trove.new(),
+            _Tweens = {} :: {Tween},
+            _ScaleValues = {} :: {NumberValue},
+            _Completed = Instance.new("BindableEvent"),
+            _CurrNumOfCompletedTweens = 0,
+            _TargetScales = {} :: {number},
+            _InitialScales = {} :: {number},
             Init = function(self)
-                local Models = {CookingPan, Pancake}
-                for _, Model in Models do
-                    self.TargetScales[Model.Name] = Model:GetScale()
-                    self.InitialScales[Model.Name] = self.TargetScales[Model.Name] / self.Multiplier
-                    self.ScaleValues[Model.Name] = Instance.new("NumberValue")
-                    local TargetScale = self.TargetScales[Model.Name]
-                    local ScaleValue = self.ScaleValues[Model.Name]
+                self.ModelsToScale = {CookingPan, Pancake}
+                for _, Model in self.ModelsToScale do
+                    self._TargetScales[Model.Name] = Model:GetScale()
+                    self._InitialScales[Model.Name] = self._TargetScales[Model.Name] / self.Multiplier
+                    self._ScaleValues[Model.Name] = Instance.new("NumberValue")
+
+                    local ScaleValue = self._ScaleValues[Model.Name]
+                    self._Trove:Add(ScaleValue)
+
                     local TweenInfo = TweenInfo.new(self.Duration, self.EasingStyle, self.EasingDirection)
-                    local Goal = { Value = TargetScale }
+                    local Goal = { Value = self._TargetScales[Model.Name] }
 
-                    self.Tweens[Model.Name] = TweenService:Create(ScaleValue, TweenInfo, Goal)
+                    self._Tweens[Model.Name] = TweenService:Create(ScaleValue, TweenInfo, Goal)
+                    self._Trove:Add(self._Tweens[Model.Name])
 
-                    ScaleValue:GetPropertyChangedSignal("Value"):Connect(function()
-                        Model:ScaleTo(ScaleValue.Value)
-                    end)
+                    self._Trove:Add(
+                        ScaleValue:GetPropertyChangedSignal("Value"):Connect(function()
+                            Model:ScaleTo(ScaleValue.Value)
+                        end)
+                    )
                 end
             end,
             Play = function(self)
-                for _, Tween: Tween in self.Tweens do
+                for _, Tween: Tween in self._Tweens do
                     Tween:Play()
-                    Tween.Completed:Once(function()
-                        if self.NumOfCompletedTweens == #(self.Tweens) then
-                            print("All Tween Completed")
-                            self.Completed:Fire()
-                        end
-                    end)
+                    self._Trove:Add(
+                        Tween.Completed:Once(function()
+                            if self._CurrNumOfCompletedTweens == #(self._Tweens) then
+                                self._Completed:Fire()
+                            end
+                        end)
+                    )
                 end
             end,
             Cleanup = function(self)
-                for _, Model in self.ModelsToScale do
-                    self.Tweens[Model.Name]:Cancel()
-                    local InitialScale = self.InitialScales[Model.Name]
-                    self.ScaleValues[Model.Name].Value = InitialScale
-                    Model:ScaleTo(InitialScale)
-                end
-                self.NumOfCompletedTweens = 0
-                return true
+                table.clear(self._TargetScales)
+                table.clear(self._InitialScales)
+                table.clear(self._ScaleValues)
+                table.clear(self._Tweens)
+                self._Trove:Clean()
+                self._CurrNumOfCompletedTweens = 0
             end
         },
         FlippingAnimation = {
-            ModelsToRotate = {CookingPan, Pancake},
-            OriginalCFrames = {},
-            UpDuration = 0.7,
-            UpEasingStyle = Enum.EasingStyle.Back,
-            UpEasingDirection = Enum.EasingDirection.In,
-            DownDuration = 1,
-            DownEasingStyle = Enum.EasingStyle.Back,
-            DownEasingDirection = Enum.EasingDirection.In,
-            UpTargetRotation = 30,
-            DownTargetRotation = 0,
-            CurrentRotation = 0,
-            CurrRepeats = 0,
-            RotationValue = Instance.new("NumberValue"),
-            UpTween = nil :: Tween?,
-            DownTween = nil :: Tween?,
-            UpTweenConnection = nil :: RBXScriptConnection?,
-            DownTweenConnection = nil :: RBXScriptConnection?,
-            RotationValueConnection = nil :: RBXScriptConnection?,
-            Repeats = 999,
-            ShouldRepeat = false :: boolean,
-            OriginalPanCFrame = CookingPan.PrimaryPart.CFrame,
+            ModelsToRotate = {} :: {Model},
+            Repeats = 3,
+            _Tweens = {
+                _Up = {
+                    Duration = 0.7,
+                    EasingStyle = Enum.EasingStyle.Back,
+                    EasingDirection = Enum.EasingDirection.In,
+                    TargetRotation = 30,
+                    _Tween = nil :: Tween?
+                },
+                _Down = {
+                    Duration = 1,
+                    EasingStyle = Enum.EasingStyle.Back,
+                    EasingDirection = Enum.EasingDirection.In,
+                    TargetRotation = 0,
+                    _Tween = nil :: Tween?
+                },
+            },
+            _LastRotationValue = 0,
+            _CurrRepeats = 0,
+            _RotationValue = nil :: NumberValue?,
+            _Trove = Trove.new(),
+            _FlippedEvent = Instance.new("BindableEvent"),
             Init = function(self)
-                for _, Model in pairs(self.ModelsToRotate) do
-                    self.OriginalCFrames[Model.Name] = Model.PrimaryPart.CFrame
+                self.ModelsToRotate = {CookingPan, Pancake}
+                self._RotationValue = Instance.new("NumberValue")
+                self._Trove:Add(self._RotationValue)
+
+                for Key, Value in self._Tweens do
+                    local TweenInfo = TweenInfo.new(Value.Duration, Value.EasingStyle, Value.EasingDirection)
+                    local Target = Value.TargetRotation + self._LastRotationValue
+                    --Make up tween rotate up
+                    if Key == "_Up" then
+                        Target = -Target
+                    end
+                    local Goal = { Value = Target }
+                    Value._Tween = TweenService:Create(self._RotationValue, TweenInfo, Goal)
+                    self._Trove:Add(Value._Tween)
                 end
-                local UpTweenInfo = TweenInfo.new(self.UpDuration, self.UpEasingStyle, self.UpEasingDirection)
-                local UpGoal = { Value = -(self.UpTargetRotation + self.CurrentRotation) }
 
-                local DownTweenInfo = TweenInfo.new(self.DownDuration, self.DownEasingStyle, self.DownEasingDirection)
-                local DownGoal = { Value = self.DownTargetRotation + self.CurrentRotation }
+                --Value connections
+                self._Trove:Add(
+                    self._RotationValue:GetPropertyChangedSignal("Value"):Connect(function()
+                        local RotationLeft = self._RotationValue.Value - self._LastRotationValue
+                        self._LastRotationValue = self._RotationValue.Value
+                        for _, Model in pairs(self.ModelsToRotate) do
+                            Model:PivotTo(Model.PrimaryPart.CFrame
+                                * CFrame.Angles(math.rad(0), math.rad(0), math.rad(RotationLeft)))
+                        end
+                    end)
+                )
 
-                self.UpTween = TweenService:Create(self.RotationValue, UpTweenInfo, UpGoal)
-                self.DownTween = TweenService:Create(self.RotationValue, DownTweenInfo, DownGoal)
-                self.RotationValueConnection = self.RotationValue:GetPropertyChangedSignal("Value"):Connect(function()
-                    if self.Cleaning then
-                        return
-                    end
-                    local RotationLeft = self.RotationValue.Value - self.CurrentRotation
-                    self.CurrentRotation = self.RotationValue.Value
-                    for _, Model in pairs(self.ModelsToRotate) do
-                        Model:PivotTo(Model.PrimaryPart.CFrame
-                            * CFrame.Angles(math.rad(0), math.rad(0), math.rad(RotationLeft)))
-                    end
-                end)
-
-                self.UpTweenConnection = self.UpTween.Completed:Connect(function()
-                    if self.CurrRepeats < self.Repeats and self.ShouldRepeat then
-                        self.DownTween:Play()
-                    end
-                end)
-
-                self.DownTweenConnection = self.DownTween.Completed:Connect(function()
-                    if self.CurrRepeats < self.Repeats and self.ShouldRepeat then
-                        self.UpTween:Play()
-                        self.CurrRepeats += 1
-                    end
-                end)
+                --tween ordering
+                local UpTween = self._Tweens._Up._Tween
+                local DownTween = self._Tweens._Down._Tween
+                self._Trove:Add(
+                    UpTween.Completed:Connect(function()
+                        self._FlippedEvent:Fire()
+                        if self._CurrRepeats < self.Repeats then
+                            DownTween:Play()
+                        end
+                    end)
+                )
+                self._Trove:Add(
+                    DownTween.Completed:Connect(function()
+                        self._CurrRepeats += 1
+                        if self._CurrRepeats < self.Repeats then
+                            UpTween:Play()
+                        else
+                            print("flipping done")
+                        end
+                    end)
+                )
             end,
             Play = function(self)
-                self.ShouldRepeat = true
-                self.UpTween:Play()
+                self._Tweens._Up._Tween:Play()
             end,
             Cleanup = function(self)
-                self.ShouldRepeat = false
-                self.UpTween:Cancel()
-                self.DownTween:Cancel()
-
-                self.CurrentRotation = 0
-                self.CurrRepeats = 0
-                self.RotationValue.Value = 0
-                for _, Model in pairs(self.ModelsToRotate) do
-                    Model:PivotTo(self.OriginalCFrames[Model.Name])
-                end
-                return true
+                self._Trove:Clean()
+                self._LastRotationValue = 0
+                self._CurrRepeats = 0
             end
         },
         PancakeAnimation = {
-            UpDuration = 0.5,
-            UpEasingStyle = Enum.EasingStyle.Quad,
-            UpEasingDirection = Enum.EasingDirection.Out,
-            DownDuration = 0.5,
-            DownEasingStyle = Enum.EasingStyle.Quad,
-            DownEasingDirection = Enum.EasingDirection.In,
-            SquishUpDuration = 0.2,
-            SquishUpEasingStyle = Enum.EasingStyle.Quad,
-            SquishUpEasingDirection = Enum.EasingDirection.In,
-            SquishDownDuration = 0.4,
-            SquishDownEasingStyle = Enum.EasingStyle.Quad,
-            SquishDownEasingDirection = Enum.EasingDirection.Out,
-            TargetHeight = 1,
-            TargetSquish = -0.145,
-            LastSquishValue = 0 :: number,
-            LastHeightValue = 0 :: number,
-            HeightValue = Instance.new("NumberValue") :: NumberValue,
-            SquishValue = Instance.new("NumberValue") :: NumberValue,
-            UpTween = nil :: Tween?,
-            DownTween = nil :: Tween?,
-            SquishDownTween = nil :: Tween?,
-            SquishUpTween = nil :: Tween?,
-            HeightValueConnection = nil :: RBXScriptConnection?,
-            OriginalCFrame = Pancake.PrimaryPart.CFrame,
+            _Tweens = {
+                _Up = {
+                    Duration = 0.5,
+                    EasingStyle = Enum.EasingStyle.Quad,
+                    EasingDirection = Enum.EasingDirection.Out,
+                    TargetHeight = 1,
+                    _Tween = nil :: Tween?,
+                },
+                _Down = {
+                    Duration = 0.5,
+                    EasingStyle = Enum.EasingStyle.Quad,
+                    EasingDirection = Enum.EasingDirection.In,
+                    TargetHeight = 0,
+                    _Tween = nil :: Tween?,
+                },
+                _SquishUp = {
+                    Duration = 0.2,
+                    EasingStyle = Enum.EasingStyle.Quad,
+                    EasingDirection = Enum.EasingDirection.In,
+                    TargetSquish = 0,
+                    _Tween = nil :: Tween?,
+                },
+                _SquishDown = {
+                    Duration = 0.4,
+                    EasingStyle = Enum.EasingStyle.Quad,
+                    EasingDirection = Enum.EasingDirection.Out,
+                    TargetSquish = -0.145,
+                    _Tween = nil :: Tween?,
+                }
+            },
+            _Trove = Trove.new(),
+            _HitPanEvent = Instance.new("BindableEvent"),
+            _LastSquishValue = 0 :: number,
+            _LastHeightValue = 0 :: number,
+            _HeightValue = nil :: NumberValue?,
+            _SquishValue = nil :: NumberValue?,
+            _PancakeChildren = nil,
             --should change later to make more secure
-            Textures = Pancake.MeshPart:GetChildren(),
-            PancakeChildren = Pancake:GetChildren(),
             Init = function(self)
-                local UpTweenInfo = TweenInfo.new(self.UpDuration, self.UpEasingStyle, self.UpEasingDirection)
-                local UpGoal = { Value = self.TargetHeight }
-                local DownTweenInfo = TweenInfo.new(self.DownDuration, self.DownEasingStyle, self.DownEasingDirection)
-                local DownGoal = { Value = 0 }
-                local SquishUpTweenInfo = TweenInfo.new(self.SquishUpDuration, self.SquishUpEasingStyle, self.SquishUpEasingDirection)
-                local SquishUpGoal = { Value = 0 }
-                local SquishDownTweenInfo = TweenInfo.new(self.SquishDownDuration, self.SquishDownEasingStyle, self.SquishDownEasingDirection)
-                local SquishDownGoal = { Value = self.TargetSquish }
+                self._PancakeChildren = Pancake:GetChildren()
+                self._HeightValue = Instance.new("NumberValue")
+                self._SquishValue = Instance.new("NumberValue")
+                self._Trove:Add(self._HeightValue)
+                self._Trove:Add(self._SquishValue)
 
-                self.UpTween = TweenService:Create(self.HeightValue, UpTweenInfo, UpGoal)
-                self.DownTween = TweenService:Create(self.HeightValue, DownTweenInfo, DownGoal)
-                self.SquishDownTween = TweenService:Create(self.SquishValue, SquishDownTweenInfo, SquishDownGoal)
-                self.SquishUpTween = TweenService:Create(self.SquishValue, SquishUpTweenInfo, SquishUpGoal)
-
-                --should make this more descriptive later
-                self.DownTween.Completed:Connect(function()
-                    for _, Texture: Texture in ipairs(self.Textures) do
-                        -- Texture.Transparency -= 0.5
+                for Key, Value in self._Tweens do
+                    local TweenInfo = TweenInfo.new(Value.Duration, Value.EasingStyle, Value.EasingDirection)
+                    local Target
+                    local TweenValue
+                    if Value.TargetSquish then
+                        Target = Value.TargetSquish
+                        TweenValue = self._SquishValue
+                    elseif Value.TargetHeight then
+                        Target = Value.TargetHeight
+                        TweenValue = self._HeightValue
                     end
-                end)
+                    --Make up tween rotate up
+                    local Goal = { Value = Target }
+                    Value._Tween = TweenService:Create(TweenValue, TweenInfo, Goal)
+                    self._Trove:Add(Value._Tween)
+                end
 
-                self.HeightValueConnection = self.HeightValue:GetPropertyChangedSignal("Value"):Connect(function()
-                    local HeightOffset = self.HeightValue.Value - self.LastHeightValue
-                    self.LastHeightValue = self.HeightValue.Value
-                    Pancake:TranslateBy(Vector3.new(0, HeightOffset, 0))
-                    Pancake:PivotTo(Pancake.PrimaryPart.CFrame
-                        * CFrame.Angles(math.rad(0), math.rad(0), math.rad(12)))
-                end)
+                --Value connections
+                self._Trove:Add(
+                    self._HeightValue:GetPropertyChangedSignal("Value"):Connect(function()
+                        local HeightOffset = self._HeightValue.Value - self._LastHeightValue
+                        self._LastHeightValue = self._HeightValue.Value
+                        CookingPan.Shadow.Size += Vector3.new(HeightOffset / 4, 0, HeightOffset / 4)
+                        Pancake:TranslateBy(Vector3.new(0, HeightOffset, 0))
+                        Pancake:PivotTo(Pancake.PrimaryPart.CFrame
+                            * CFrame.Angles(math.rad(0), math.rad(0), math.rad(12)))
+                    end)
+                )
 
-                self.SquishValueConnection = self.SquishValue:GetPropertyChangedSignal("Value"):Connect(function()
-                    local SquishValue = self.SquishValue.Value
-                    local YOffset = SquishValue - self.LastSquishValue
-                    self.LastSquishValue = SquishValue
-                    for _, Child in self.PancakeChildren do
-                        if Child.ClassName == "MeshPart" or Child.ClassName == "BasePart" then
-                            Child.Size += Vector3.new(-YOffset, YOffset, -YOffset)
+                self._Trove:Add(
+                    self._SquishValue:GetPropertyChangedSignal("Value"):Connect(function()
+                        local SquishValue = self._SquishValue.Value
+                        local YOffset = SquishValue - self._LastSquishValue
+                        self._LastSquishValue = SquishValue
+                        for _, Child in self._PancakeChildren do
+                            if Child.ClassName == "MeshPart" or Child.ClassName == "BasePart" then
+                                Child.Size += Vector3.new(-YOffset, YOffset, -YOffset)
+                            end
                         end
-                    end
-                end)
+                    end)
+                )
+
+                --Tween ordering
+                local UpTween = self._Tweens._Up._Tween
+                local DownTween = self._Tweens._Down._Tween
+                local SquishDownTween = self._Tweens._SquishDown._Tween
+                local SquishUpTween = self._Tweens._SquishUp._Tween
+                self._Trove:Add(
+                    UpTween.Completed:Connect(function()
+                        DownTween:Play()
+                    end)
+                )
+                self._Trove:Add(
+                    DownTween.Completed:Connect(function()
+                        self._HitPanEvent:Fire()
+                        SquishDownTween:Play()
+                    end)
+                )
+                self._Trove:Add(
+                    SquishDownTween.Completed:Connect(function()
+                        SquishUpTween:Play()
+                    end)
+                )
             end,
             Play = function(self)
-                self.UpTween:Play()
-                self.UpTween.Completed:Once(function()
-                    self.DownTween:Play()
-                end)
-                self.DownTween.Completed:Once(function()
-                    self.SquishDownTween:Play()
-                end)
-                self.SquishDownTween.Completed:Once(function()
-                    self.SquishUpTween:Play()
-                end)
+                self._Tweens._Up._Tween:Play()
             end,
             Cleanup = function(self)
-                self.UpTween:Cancel()
-                self.DownTween:Cancel()
-                print("changed height value")
-                self.HeightValue.Value = 0
-                self.SquishValue.Value = 0
-                self.LastHeightValue = 0
-                self.LastSquishValue = 0
-                for _, Texture: Texture in ipairs(self.Textures) do
-                        Texture.Transparency = 1
-                end
-                return true
+                self._Trove:Clean()
+                self._LastSquishValue = 0
+                self._LastHeightValue = 0
             end
         }
     },
 
+    Colors = {
+        ["Common"] = Color3.fromRGB(113, 111, 109),
+        ["Uncommon"] = Color3.fromRGB(78, 132, 95),
+        ["Rare"] = Color3.fromRGB(40, 70, 105),
+        ["Epic"] = Color3.fromRGB(71, 57, 87),
+        ["Legendary"] = Color3.fromRGB(198, 139, 44),
+        ["Mythic"] = Color3.fromRGB(137, 51, 71)
+    },
+
     Init = function(self)
+        CookingPan = CookingPanTemplate:Clone()
+        CookingPan.Parent = WorldModel
+        Pancake = PancakeTemplate:Clone()
+        Pancake.Parent = WorldModel
+        self._Trove:Add(CookingPan)
+        self._Trove:Add(Pancake)
         self.Components.ScalingAnimation:Init()
         self.Components.FlippingAnimation:Init()
         self.Components.PancakeAnimation:Init()
-        self.PancakeConnection = self.Components.FlippingAnimation.UpTween.Completed:Connect(function()
-            if not self.Cleaning then
-                self.Components.PancakeAnimation:Play()
-                self.Components.FlippingAnimation.ModelsToRotate[Pancake] = nil
-            end
-        end)
-        self.Components.PancakeAnimation.DownTween.Completed:Connect(function()
-            self.Components.FlippingAnimation.ModelsToRotate[Pancake] = Pancake
-            local Remaining = self.Components.FlippingAnimation.RotationValue.Value - Pancake.PrimaryPart.Orientation.Z
-            Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(
-                math.rad(0),
-                math.rad(0),
-                math.rad(Remaining)
-            ))
-        end)
     end,
 
-    Play = function(self)
-        while self.Cleaning do
-            task.wait(0.1)
-        end
+    Play = function(self, Rarity: string)
+        --Change color based on rarity
+        Pancake.MeshPart.Color = self.Colors[Rarity]
+
+        --First Scale
+        self._Trove:Add(
+            self.Components.ScalingAnimation._Completed.Event:Once(function()
+                self.Components.FlippingAnimation:Play()
+            end)
+        )
+        --then flip
+        self._Trove:Add(
+            self.Components.FlippingAnimation._FlippedEvent.Event:Connect(function()
+                --make pancake go in air when flipping up
+                self.Components.PancakeAnimation:Play()
+            end)
+        )
+
+        --Make pancake same orientation as pan after flipping in the air
+        self._Trove:Add(
+            self.Components.PancakeAnimation._HitPanEvent.Event:Connect(function()
+                local Remaining = self.Components.FlippingAnimation._RotationValue.Value
+                   - Pancake.PrimaryPart.Orientation.Z
+                Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(
+                    math.rad(0),
+                    math.rad(0),
+                    math.rad(Remaining)
+                ))
+                -- make cracks more visible
+                for _, Child in Pancake.MeshPart:GetChildren() do
+                    if Child.ClassName == ("Decal") then
+                        Child.Transparency -= 0.25
+                    end
+                end
+
+                local NumOfParticles = 20
+                local Duration = 10
+                local MaxX = 0.57
+                local MinX = 0.44
+                local MaxY = 0.60
+                local MinY = 0.45
+                local MaxVel = 5
+                local MinVel = 1
+                local MinAngle = -150
+                local MaxAngle = -30
+                for i = 1, NumOfParticles, 1 do
+                    task.spawn(function()
+                        local RockParticle = RockParticleTemplate:Clone()
+                        self._Trove:Add(RockParticle)
+                        local RandomXPos = math.random() * (MaxX - MinX) + MinX
+                        local RandomYPos = math.random() * (MaxY - MinY) + MinY
+                        local RandomVel = math.random(MinVel, MaxVel)
+                        local RandomAngle = math.random(MinAngle, MaxAngle)
+                        local RandomSizeX = math.random(5, 15)
+                        local RandomSizeY = math.random(5, 15)
+                        RockParticle.Position = UDim2.new(RandomXPos, 0, RandomYPos, 0)
+                        RockParticle.Parent = ViewportFrame
+                        RockParticle.BackgroundColor3 = self.Colors[Rarity]
+                        RockParticle.BackgroundColor3 = self.Colors[Rarity]
+                        local YVel = -(math.ceil(math.sin(math.rad(RandomAngle)) * RandomVel) + 10)
+                        local XVel = math.ceil(math.cos(math.rad(RandomAngle)) * RandomVel)
+                        local StartTime = os.time()
+                        while os.time() - StartTime < Duration do
+                            --negative y velocity is up
+                            YVel += 0.2
+                            RockParticle.Position += UDim2.new(0, XVel, 0, YVel)
+                            -- RockParticle.ImageTransparency += 0.01
+                            -- RockParticle.BackgroundTransparency += 0.01
+                            task.wait(0.001)
+                        end
+                        self._Trove:Remove(RockParticle)
+                    end)
+                end
+            end)
+        )
         self.Components.ScalingAnimation:Play()
-        self.Components.ScalingAnimation.Completed.Event:Once(function()
-            self.Components.FlippingAnimation:Play()
-        end)
     end,
 
     Cleanup = function(self)
-        self.Cleaning = true
-        local Done1 = self.Components.FlippingAnimation:Cleanup()
-        local Done2 = self.Components.ScalingAnimation:Cleanup()
-        local Done3 = self.Components.PancakeAnimation:Cleanup()
-        while not Done1 and not Done2 and not Done3 do
-            task.wait(0.1)
-        end
-        self.Cleaning = false
+        self._Trove:Clean()
+        self.Components.ScalingAnimation:Cleanup()
+        self.Components.FlippingAnimation:Cleanup()
+        self.Components.PancakeAnimation:Cleanup()
     end
 }
 
