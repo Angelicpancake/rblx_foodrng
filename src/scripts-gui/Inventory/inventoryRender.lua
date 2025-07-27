@@ -98,6 +98,9 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 	itemClone.Name = foodItem
 	itemClone.Visible = true
 
+	itemClone.StarQuan.Text = " "
+	itemClone.ImageLabel.Visible = false
+
 	itemClone.Click.MouseButton1Click:Connect(function()
 		if ownedSet[foodItem] then
 			openPreview(foodItem)
@@ -120,7 +123,18 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 	itemClone.ItemImage.ItemQuan.Text = `X{quan}`
 	itemClone.Parent = inventoryFrame.Scroll
 	itemClone.BackgroundColor3 = rarityColor[foodData.foodList[foodItem].rarity]
+	itemClone.UIStroke.Color = rarityColor[foodData.foodList[foodItem].rarity]
 	itemClone.ItemImage.Image = foodData.foodList[foodItem].image or "rbxassetid://0" -- Fallback to a default image if not found
+
+	--star info
+	if ownedSet[foodItem] then
+		local stars = inventoryData.Food:FindFirstChild(foodItem).Stars.Value
+
+		if stars > 0 then
+			itemClone.StarQuan.Text = stars
+			itemClone.ImageLabel.Visible = true
+		end
+	end
 end
 
 local function renderInventory(sorting: string, owned: boolean, currentPage: number, query: string)
