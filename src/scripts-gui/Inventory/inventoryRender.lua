@@ -111,10 +111,15 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 
 	local quan
 
+	itemClone.ItemImage.ItemName.Text = foodItem
+
+	if foodItem == "Tralalero Tralala Cappuccino Assassino" then
+		itemClone.ItemImage.ItemName.Text = "Tralalero"
+	end
+
 	if ownedSet[foodItem] then
 		quan = inventoryData.Food:FindFirstChild(foodItem).Quantity.Value
 
-		itemClone.ItemImage.ItemName.Text = foodItem
 		itemClone.ItemImage.ImageTransparency = 0
 		itemClone.ItemImage.ImageColor3 = Color3.new(255, 255, 255)
 	else
