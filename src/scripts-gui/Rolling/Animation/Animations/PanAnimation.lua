@@ -12,6 +12,8 @@ local WorldModel: WorldModel = Players.LocalPlayer:WaitForChild("PlayerGui")
 local CookingPanTemplate = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("Cooking pan")) :: Model
 local PancakeTemplate = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("Pancake")) :: Model
 local RockParticleTemplate: Model = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RockParticle")) :: Model
+local RollResultFrame = ViewportFrame:WaitForChild("RollResultFrame")
+local RollResultImage = RollResultFrame:WaitForChild("RollResultImage")
 
 local CookingPan: Model = nil
 local Pancake: Model = nil
@@ -396,9 +398,12 @@ local Animation: PanAnimationTypes.AnimationType = {
         self.Components.ShakingAnimation:Init()
     end,
 
-    Play = function(self, Rarity: string)
+    Play = function(self, RollResult)
         --Change color based on rarity
-        Pancake.MeshPart.Color = self.Colors[Rarity]
+        print(RollResult)
+        Pancake.MeshPart.Color = self.Colors[RollResult.Food.rarity]
+
+        RollResultImage.Image = RollResult.Food.image
 
         --First Scale
         self._Trove:Add(
@@ -454,7 +459,7 @@ local Animation: PanAnimationTypes.AnimationType = {
                         local RandomSizeY = math.random(5, 10)
                         RockParticle.Position = UDim2.new(RandomXPos, 0, RandomYPos, 0)
                         RockParticle.Parent = ViewportFrame
-                        RockParticle.BackgroundColor3 = self.Colors[Rarity]
+                        RockParticle.BackgroundColor3 = self.Colors[RollResult.Food.rarity]
                         RockParticle.Size = UDim2.new(0, RandomSizeX, 0, RandomSizeY)
                         local YVel = -(math.ceil(math.sin(math.rad(RandomAngle)) * RandomVel) + 10)
                         local XVel = math.ceil(math.cos(math.rad(RandomAngle)) * RandomVel)
@@ -480,6 +485,7 @@ local Animation: PanAnimationTypes.AnimationType = {
         self._Trove:Add(self.Components.ShakingAnimation._Completed.Event:Once(function()
             --Delete all previous animation things
             self._Trove:Clean()
+            RollResultFrame.Visible = true
         end))
     
         --start off animation with scaling animation
@@ -492,6 +498,7 @@ local Animation: PanAnimationTypes.AnimationType = {
         self.Components.FlippingAnimation:Cleanup()
         self.Components.PancakeAnimation:Cleanup()
         self.Components.ShakingAnimation:Cleanup()
+        RollResultFrame.Visible = false
     end
 }
 

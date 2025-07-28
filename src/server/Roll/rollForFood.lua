@@ -29,11 +29,16 @@ end
 local function Roll(player: Player, LuckBoost: number)
     print("Rolling With A Luckboost of", LuckBoost, "%")
     local Rarity = GetRarity(LuckBoost)
-    local FoodName = FoodList.foodByRarity[Rarity][math.random(1, #FoodList.foodByRarity[Rarity])]
+    local TableByIndex = {}
+    for FoodName, Food in FoodList.foodByRarity[Rarity] do
+        table.insert(TableByIndex, {FoodName = FoodName, Food = Food})
+    end
+    local FoodEntry = TableByIndex[math.random(1, #TableByIndex)]
+    print(FoodEntry)
     -- random food from foodList
 
-    GivePlayer(FoodName, Rarity, player)
-    return FoodName
+    GivePlayer(FoodEntry.FoodName, Rarity, player)
+    return FoodEntry
 end
 
 -- local function RollTest()

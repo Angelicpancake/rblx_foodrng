@@ -193,8 +193,8 @@ for foodName, info in pairs(foodData.foodList) do
 	end
 
 	--add to the table
-	table.insert(foodData.foodByRarity[info.rarity], foodName)
-	table.insert(foodData.foodByCountry[info.country], foodName)
+	foodData.foodByRarity[info.rarity][foodName] = info
+	foodData.foodByCountry[info.country][foodName] = info
 end
 
 return foodData

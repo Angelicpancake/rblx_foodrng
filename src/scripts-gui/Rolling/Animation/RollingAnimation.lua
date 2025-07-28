@@ -26,13 +26,13 @@ local function EndRollingAnimation()
     RollingAnimationInit()
 end
 
-local function PlayRollingAnimation(Rarity: string)
+local function PlayRollingAnimation(RollResult)
     while PanAnimation.Cleaning do
         task.wait(0.1)
     end
     openExclusiveGui(RollingAnimationGui)
     BlurAnimation:Play()
-    PanAnimation:Play(Rarity)
+    PanAnimation:Play(RollResult)
     CurrInAnimation = true
 end
 
