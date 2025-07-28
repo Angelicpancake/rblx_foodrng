@@ -39,11 +39,11 @@ end
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        if CurrInAnimation then
-            EndRollingAnimation()
-        end
-    end
+    -- if input.UserInputType == Enum.UserInputType.MouseButton1 then
+    --     if CurrInAnimation then
+    --         EndRollingAnimation()
+    --     end
+    -- end
 end)
 
 return {PlayRollingAnimation = PlayRollingAnimation, RollingAnimationInit = RollingAnimationInit}

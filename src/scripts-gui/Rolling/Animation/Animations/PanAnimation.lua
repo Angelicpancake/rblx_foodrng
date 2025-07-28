@@ -1,7 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Trove = require(ReplicatedStorage:WaitForChild("Packages").Trove)
+local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 local ViewportFrame = Players.LocalPlayer:WaitForChild("PlayerGui")
     :WaitForChild("RollingAnimationGui"):WaitForChild("RollingViewportFrame")
 local WorldModel: WorldModel = Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -19,7 +21,7 @@ local PanAnimationTypes = require(Players.LocalPlayer:WaitForChild("PlayerScript
 
 local Animation: PanAnimationTypes.AnimationType = {
     _Trove = Trove.new(),
-    Cleaning = false,
+    _Completed = Instance.new("BindableEvent"),
     Components = {
         ScalingAnimation = {
             ModelsToScale = {} :: {Model},
@@ -101,6 +103,7 @@ local Animation: PanAnimationTypes.AnimationType = {
             _CurrRepeats = 0,
             _RotationValue = nil :: NumberValue?,
             _Trove = Trove.new(),
+            _Completed = Instance.new("BindableEvent"),
             _FlippedEvent = Instance.new("BindableEvent"),
             Init = function(self)
                 self.ModelsToRotate = {CookingPan, Pancake}
@@ -148,7 +151,7 @@ local Animation: PanAnimationTypes.AnimationType = {
                         if self._CurrRepeats < self.Repeats then
                             UpTween:Play()
                         else
-                            print("flipping done")
+                            self._Completed:Fire()
                         end
                     end)
                 )
@@ -280,6 +283,94 @@ local Animation: PanAnimationTypes.AnimationType = {
                 self._LastSquishValue = 0
                 self._LastHeightValue = 0
             end
+        },
+        ShakingAnimation = {
+            _ModelsToShake = {} :: {Model},
+            _Trove = Trove.new(),
+            _OriginalScales = {},
+            Speed = 7,
+            _Tweens = {
+                Explosion = {
+                    Duration = 0.5,
+                    EasingStyle = Enum.EasingStyle.Back,
+                    EasingDirection = Enum.EasingDirection.In,
+                    TargetMultiple = 7,
+                    _Tweens = {} :: {Tween?},
+                    _CurrNumOfCompletedTweens = 0
+                }
+            },
+            _ElapsedTime = 0,
+            _SeedX = nil :: number?,
+            _SeedY = nil :: number?,
+            _BaseCFrames = {} :: {Vector3?},
+            _Completed = Instance.new("BindableEvent"),
+            Init = function(self)
+                self._ModelsToShake = {CookingPan, Pancake}
+
+                --Shaking stuff
+                for _, Model in self._ModelsToShake do
+                    self._BaseCFrames[Model] = Model.PrimaryPart.CFrame
+                end
+                self._SeedX = math.random(1, 1000)
+                self._SeedY = math.random(1, 1000)
+
+                --Explosion Stuff
+                local Component = self._Tweens.Explosion
+                for _, Model in self._ModelsToShake do
+                    self._OriginalScales[Model] = Model:GetScale()
+                    local TweenValue = Instance.new("NumberValue")
+                    TweenValue.Value = self._OriginalScales[Model]
+                    self._Trove:Add(TweenValue)
+                    local TweenInfo = TweenInfo.new(Component.Duration, Component.EasingStyle, Component.EasingDirection)
+                    local Target = self._OriginalScales[Model] * Component.TargetMultiple
+                    local Goal = {Value = Target}
+
+                    local Tween = TweenService:Create(TweenValue, TweenInfo, Goal)
+                    table.insert(Component._Tweens, Tween)
+                    self._Trove:Add(Tween)
+                    self._Trove:Add(TweenValue:GetPropertyChangedSignal("Value"):Connect(function()
+                        Model:ScaleTo(TweenValue.Value)
+                    end))
+
+                    self._Trove:Add(Tween.Completed:Once(function()
+                        Component._CurrNumOfCompletedTweens += 1
+                        if Component._CurrNumOfCompletedTweens == #(Component._Tweens) then
+                            self._Completed:Fire()
+                        end
+                    end))
+                end
+            end,
+            Play = function(self)
+                self._Trove:Add(UserInputService.InputBegan:Connect(function(Input, GameProcessed)
+                    if GameProcessed then return end
+
+                    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        for _, TweenComponent in self._Tweens.Explosion._Tweens do
+                            TweenComponent:Play()
+                        end
+                    end
+                end))
+                self._Trove:Add(RunService.RenderStepped:Connect(function(dt)
+                    self._ElapsedTime += dt * self.Speed
+                    local RandomZ = math.noise(self._ElapsedTime, self._SeedX) / 2
+
+                    for Model, ModelCFrame : CFrame in self._BaseCFrames do
+                        local NewPosition = ModelCFrame * CFrame.Angles(
+                            math.rad(0),
+                            math.rad(0),
+                            RandomZ
+                        )
+                        Model:PivotTo(NewPosition)
+                    end
+                end))
+            end,
+            Cleanup = function(self)
+                self._Trove:Clean()
+                table.clear(self._ModelsToShake)
+                table.clear(self._BaseCFrames)
+                table.clear(self._Tweens.Explosion._Tweens)
+                self._ElapsedTime = 0
+            end
         }
     },
 
@@ -302,6 +393,7 @@ local Animation: PanAnimationTypes.AnimationType = {
         self.Components.ScalingAnimation:Init()
         self.Components.FlippingAnimation:Init()
         self.Components.PancakeAnimation:Init()
+        self.Components.ShakingAnimation:Init()
     end,
 
     Play = function(self, Rarity: string)
@@ -335,11 +427,12 @@ local Animation: PanAnimationTypes.AnimationType = {
                 -- make cracks more visible
                 for _, Child in Pancake.MeshPart:GetChildren() do
                     if Child.ClassName == ("Decal") then
-                        Child.Transparency -= 0.25
+                        Child.Transparency -= 1/(self.Components.FlippingAnimation.Repeats)
                     end
                 end
 
-                local NumOfParticles = 20
+                --Cracking effect stuff
+                local NumOfParticles = 100
                 local Duration = 10
                 local MaxX = 0.57
                 local MinX = 0.44
@@ -357,12 +450,12 @@ local Animation: PanAnimationTypes.AnimationType = {
                         local RandomYPos = math.random() * (MaxY - MinY) + MinY
                         local RandomVel = math.random(MinVel, MaxVel)
                         local RandomAngle = math.random(MinAngle, MaxAngle)
-                        local RandomSizeX = math.random(5, 15)
-                        local RandomSizeY = math.random(5, 15)
+                        local RandomSizeX = math.random(5, 10)
+                        local RandomSizeY = math.random(5, 10)
                         RockParticle.Position = UDim2.new(RandomXPos, 0, RandomYPos, 0)
                         RockParticle.Parent = ViewportFrame
                         RockParticle.BackgroundColor3 = self.Colors[Rarity]
-                        RockParticle.BackgroundColor3 = self.Colors[Rarity]
+                        RockParticle.Size = UDim2.new(0, RandomSizeX, 0, RandomSizeY)
                         local YVel = -(math.ceil(math.sin(math.rad(RandomAngle)) * RandomVel) + 10)
                         local XVel = math.ceil(math.cos(math.rad(RandomAngle)) * RandomVel)
                         local StartTime = os.time()
@@ -379,6 +472,17 @@ local Animation: PanAnimationTypes.AnimationType = {
                 end
             end)
         )
+
+        self._Trove:Add(self.Components.FlippingAnimation._Completed.Event:Once(function()
+            self.Components.ShakingAnimation:Play()
+        end))
+
+        self._Trove:Add(self.Components.ShakingAnimation._Completed.Event:Once(function()
+            --Delete all previous animation things
+            self._Trove:Clean()
+        end))
+    
+        --start off animation with scaling animation
         self.Components.ScalingAnimation:Play()
     end,
 
@@ -387,6 +491,7 @@ local Animation: PanAnimationTypes.AnimationType = {
         self.Components.ScalingAnimation:Cleanup()
         self.Components.FlippingAnimation:Cleanup()
         self.Components.PancakeAnimation:Cleanup()
+        self.Components.ShakingAnimation:Cleanup()
     end
 }
 
