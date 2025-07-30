@@ -4,6 +4,7 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
 local ViewportFrame = Players.LocalPlayer:WaitForChild("PlayerGui")
     :WaitForChild("RollingAnimationGui"):WaitForChild("RollingViewportFrame")
 local WorldModel: WorldModel = Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -12,11 +13,13 @@ local WorldModel: WorldModel = Players.LocalPlayer:WaitForChild("PlayerGui")
 local CookingPanTemplate = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("Cooking pan")) :: Model
 local PancakeTemplate = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("Pancake")) :: Model
 local RockParticleTemplate: Model = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RockParticle")) :: Model
-local RollResultFrame = ViewportFrame:WaitForChild("RollResultFrame")
-local RollResultImage = RollResultFrame:WaitForChild("RollResultImage")
+local RollResultPartTemplate = (ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Templates"):WaitForChild("RollResultPart"))
 
 local CookingPan: Model = nil
 local Pancake: Model = nil
+local RollResultPart: Part = nil
+
+local ShineAnimation = require(script.Parent.ShineAnimation)
 
 local PanAnimationTypes = require(Players.LocalPlayer:WaitForChild("PlayerScripts")
     :WaitForChild("Client"):WaitForChild("Types").PanAnimationTypes)
@@ -371,9 +374,11 @@ local Animation: PanAnimationTypes.AnimationType = {
                 table.clear(self._ModelsToShake)
                 table.clear(self._BaseCFrames)
                 table.clear(self._Tweens.Explosion._Tweens)
+                self._Tweens.Explosion._CurrNumOfCompletedTweens = 0
                 self._ElapsedTime = 0
             end
-        }
+        },
+        ShineAnimatiion = {}
     },
 
     Colors = {
@@ -390,8 +395,15 @@ local Animation: PanAnimationTypes.AnimationType = {
         CookingPan.Parent = WorldModel
         Pancake = PancakeTemplate:Clone()
         Pancake.Parent = WorldModel
+
+        RollResultPart = RollResultPartTemplate:Clone()
+        RollResultPart.FrontDecal.Transparency = 1
+        RollResultPart.BackDecal.Transparency = 1
+        RollResultPart.Parent = WorldModel
+
         self._Trove:Add(CookingPan)
         self._Trove:Add(Pancake)
+        self._Trove:Add(RollResultPart)
         self.Components.ScalingAnimation:Init()
         self.Components.FlippingAnimation:Init()
         self.Components.PancakeAnimation:Init()
@@ -400,10 +412,11 @@ local Animation: PanAnimationTypes.AnimationType = {
 
     Play = function(self, RollResult)
         --Change color based on rarity
-        print(RollResult)
         Pancake.MeshPart.Color = self.Colors[RollResult.Food.rarity]
+        self.Components.ShineAnimation = ShineAnimation.new(self.Colors[RollResult.Food.rarity])
 
-        RollResultImage.Image = RollResult.Food.image
+        RollResultPart.FrontDecal.Texture = RollResult.Food.image
+        RollResultPart.BackDecal.Texture = RollResult.Food.image
 
         --First Scale
         self._Trove:Add(
@@ -419,9 +432,9 @@ local Animation: PanAnimationTypes.AnimationType = {
             end)
         )
 
-        --Make pancake same orientation as pan after flipping in the air
         self._Trove:Add(
             self.Components.PancakeAnimation._HitPanEvent.Event:Connect(function()
+                --Make pancake same orientation as pan after flipping in the air
                 local Remaining = self.Components.FlippingAnimation._RotationValue.Value
                    - Pancake.PrimaryPart.Orientation.Z
                 Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(
@@ -436,7 +449,7 @@ local Animation: PanAnimationTypes.AnimationType = {
                     end
                 end
 
-                --Cracking effect stuff
+                --Cracking particle effect stuff
                 local NumOfParticles = 100
                 local Duration = 10
                 local MaxX = 0.57
@@ -478,14 +491,42 @@ local Animation: PanAnimationTypes.AnimationType = {
             end)
         )
 
+        local ShakingAnimationPlayed = false
+
         self._Trove:Add(self.Components.FlippingAnimation._Completed.Event:Once(function()
             self.Components.ShakingAnimation:Play()
+            ShakingAnimationPlayed = true
         end))
 
         self._Trove:Add(self.Components.ShakingAnimation._Completed.Event:Once(function()
             --Delete all previous animation things
-            self._Trove:Clean()
-            RollResultFrame.Visible = true
+            self.Components.ShakingAnimation:Cleanup()
+            self._Trove:Remove(CookingPan)
+            self._Trove:Remove(Pancake)
+
+            RollResultPart.FrontDecal.Transparency = 0
+            RollResultPart.BackDecal.Transparency = 0
+            self.Components.ShineAnimation:Play()
+        end))
+
+        self._Trove:Add(UserInputService.InputBegan:Connect(function(Input, GameProcessed)
+            if GameProcessed then return end
+
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 and not ShakingAnimationPlayed then
+                print(self._Trove)
+                self.Components.ScalingAnimation:Cleanup()
+                self.Components.FlippingAnimation:Cleanup()
+                self.Components.PancakeAnimation:Cleanup()
+                for _, TweenComponent in self.Components.ShakingAnimation._Tweens.Explosion._Tweens do
+                    TweenComponent:Play()
+                end
+                ShakingAnimationPlayed = true
+            end
+        end))
+
+
+        self._Trove:Add(self.Components.ShineAnimation.CompletedEvent:Once(function()
+            self._Completed:Fire()
         end))
     
         --start off animation with scaling animation
@@ -494,11 +535,11 @@ local Animation: PanAnimationTypes.AnimationType = {
 
     Cleanup = function(self)
         self._Trove:Clean()
-        self.Components.ScalingAnimation:Cleanup()
-        self.Components.FlippingAnimation:Cleanup()
-        self.Components.PancakeAnimation:Cleanup()
+        self.Components.ShineAnimation:Cleanup()
         self.Components.ShakingAnimation:Cleanup()
-        RollResultFrame.Visible = false
+        self.Components.PancakeAnimation:Cleanup()
+        self.Components.FlippingAnimation:Cleanup()
+        self.Components.ScalingAnimation:Cleanup()
     end
 }
 

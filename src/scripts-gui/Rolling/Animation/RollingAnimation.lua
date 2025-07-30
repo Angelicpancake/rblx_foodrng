@@ -12,8 +12,6 @@ local DefaultGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("D
 local PanAnimation = require(script.Parent.Animations.PanAnimation)
 local BlurAnimation = require(script.Parent.Animations.BlurAnimation)
 
-local CurrInAnimation = false
-
 local function RollingAnimationInit()
     PanAnimation:Init()
 end
@@ -22,7 +20,6 @@ local function EndRollingAnimation()
     openExclusiveGui(DefaultGui)
     PanAnimation:Cleanup()
     BlurAnimation:Cleanup()
-    CurrInAnimation = false
     RollingAnimationInit()
 end
 
@@ -30,20 +27,12 @@ local function PlayRollingAnimation(RollResult)
     while PanAnimation.Cleaning do
         task.wait(0.1)
     end
+    PanAnimation._Completed.Event:Once(function()
+        EndRollingAnimation()
+    end)
     openExclusiveGui(RollingAnimationGui)
     BlurAnimation:Play()
     PanAnimation:Play(RollResult)
-    CurrInAnimation = true
 end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    
-    -- if input.UserInputType == Enum.UserInputType.MouseButton1 then
-    --     if CurrInAnimation then
-    --         EndRollingAnimation()
-    --     end
-    -- end
-end)
 
 return {PlayRollingAnimation = PlayRollingAnimation, RollingAnimationInit = RollingAnimationInit}
