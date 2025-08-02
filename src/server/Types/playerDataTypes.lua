@@ -9,16 +9,25 @@ local ItemList = require(FoodScripts.itemList)
 
 local Types = ServerScriptService:WaitForChild("Server"):WaitForChild("Types")
 local BonusDataTypes = require(Types.bonusDataTypes)
+local TimeEventDataTypes = require(Types.timedEventDataTypes)
 
 export type InventoryDataType = {
 	Food: { [string]: { Quantity: number, Rarity: string, Stars: number } },
 	Items: { string? },
 }
 
+export type ProfileDataTemplateType = {
+	Level: number,
+	XP: number,
+	FoodDex: number,
+	LastLogin: () -> number
+}
+
 export type ProfileDataType = {
 	Level: number,
 	XP: number,
 	FoodDex: number,
+	LastLogin: number
 }
 
 export type UpgradeDataType = {
@@ -32,6 +41,15 @@ export type PlayerDataType = {
 	Inventory: InventoryDataType,
 	Profile: ProfileDataType,
 	Upgrades: UpgradeDataType,
+	Timers: {TimeEventDataTypes.TimeEventDataType}
+}
+
+export type PlayerDataTemplateType = {
+	_DATAVERSION: number,
+	Inventory: InventoryDataType,
+	Profile: ProfileDataTemplateType,
+	Upgrades: UpgradeDataType,
+	Timers: {TimeEventDataTypes.TimeEventDataType}
 }
 
 local Rarities = {}
@@ -63,6 +81,7 @@ local PlayerDataTypeChecker = t.strictInterface({
 		Level = t.integer, -- Integer, not float
 		XP = t.numberConstrained(0, math.huge),
 		FoodDex = t.integer,
+		LastLogin = t.number
 	}),
 	Upgrades = t.interface({
 		LuckBoost = t.numberConstrained(0, 10), -- Between 0 and 10
@@ -73,6 +92,14 @@ local PlayerDataTypeChecker = t.strictInterface({
 			Expiry = t.optional(t.number)
 		})))
 	}),
+	Timers = t.array(
+		t.strictInterface({
+			Type = t.union(t.literal("Bonus")),
+			Name = t.string,
+			Time = t.number,
+			Callback = t.optional(t.callback)
+		})
+	)
 })
 
 return { PlayerDataTypeChecker = PlayerDataTypeChecker }

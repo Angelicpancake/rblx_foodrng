@@ -7,6 +7,8 @@ local function deepCopy(template)
 	for k, v in pairs(template) do
 		if type(v) == "table" then
 			copy[k] = deepCopy(v)
+		elseif type(v) == "function" then
+			copy[k] = v()
 		else
 			copy[k] = v
 		end

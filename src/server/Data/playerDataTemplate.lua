@@ -5,7 +5,7 @@ local PlayerDataTypes = require(Types.playerDataTypes)
 
 local PlayerDataClass = {}
 
-local PlayerDataTemplate: PlayerDataTypes.PlayerDataType = {
+local PlayerDataTemplate: PlayerDataTypes.PlayerDataTemplateType = {
 	_DATAVERSION = 3,
 	Inventory = {
 		Food = {},
@@ -15,11 +15,16 @@ local PlayerDataTemplate: PlayerDataTypes.PlayerDataType = {
 		Level = 0,
 		XP = 0,
 		FoodDex = 0,
+		LastLogin = function()
+			local now = DateTime.now()
+			return now.UnixTimestampMillis
+		end
 	},
 	Upgrades = {
 		LuckBoost = 0.00,
 		Bonuses = {}
 	},
+	Timers = {}
 }
 
 return PlayerDataTemplate

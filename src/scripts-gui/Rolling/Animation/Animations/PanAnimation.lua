@@ -418,6 +418,8 @@ local Animation: PanAnimationTypes.AnimationType = {
         RollResultPart.FrontDecal.Texture = RollResult.Food.image
         RollResultPart.BackDecal.Texture = RollResult.Food.image
 
+        local OriginalPanCFrame = CookingPan.PrimaryPart.CFrame
+
         --First Scale
         self._Trove:Add(
             self.Components.ScalingAnimation._Completed.Event:Once(function()
@@ -528,9 +530,11 @@ local Animation: PanAnimationTypes.AnimationType = {
         self._Trove:Add(self.Components.ShineAnimation.CompletedEvent:Once(function()
             self._Completed:Fire()
         end))
-    
+
         --start off animation with scaling animation
         self.Components.ScalingAnimation:Play()
+
+        task.wait(5)
     end,
 
     Cleanup = function(self)

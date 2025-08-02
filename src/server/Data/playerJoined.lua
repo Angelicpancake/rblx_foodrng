@@ -6,7 +6,6 @@
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local t = require(replicatedStorage:WaitForChild("Packages").t)
 
 --playerDataTemplate contains type PlayerData
 local Types = ServerScriptService:WaitForChild("Server"):WaitForChild("Types")
@@ -14,8 +13,7 @@ local PlayerDataTypes = require(Types.playerDataTypes)
 local PlayerDataTemplate = require(script.Parent.playerDataTemplate) --player data template
 local deepCopy = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util").deepCopy) --deep copy function
 local PlayerDataFuncs = require(script.Parent.playerDataMap)
-local DataReadyEvent: BindableEvent =
-	replicatedStorage:WaitForChild("Events"):WaitForChild("Data"):WaitForChild("dataReadyEvent")
+local HandleLastLogin = require(script.Parent.handleLastLogin)
 
 local function addToPlayer(parent: Player | Folder, DataObj: PlayerDataTypes.PlayerDataType)
 	for key, value in pairs(DataObj) do
@@ -64,7 +62,7 @@ local function onPlayerJoin(player, dataStore)
 	--if success failed: could not retrieve data from player's datastore
 	if not success then
 		local RetryCount = 1
-		error([[failed to load data for ${player.Name}, Retrying ${RetryCount}]])
+		print(`failed to load data for ${player.Name}, Retrying ${RetryCount}`)
 		while not success do
 			success, PlayerData = pcall(function()
 				return dataStore:GetAsync(userId)
@@ -85,10 +83,12 @@ local function onPlayerJoin(player, dataStore)
 	end
 
 	if not PlayerDataTypes.PlayerDataTypeChecker(PlayerData) then
-		local Success, ErrorMessage = PlayerDataTypes.PlayerDataTypeChecker(PlayerData)
+		local _success2, ErrorMessage = PlayerDataTypes.PlayerDataTypeChecker(PlayerData)
 		print("corrupted data, rolling back", ErrorMessage)
 		--go to previous saved data
 	end
+
+	HandleLastLogin(PlayerData.Profile)
 
 	print("Player Data:", PlayerData)
 	addToPlayer(player, PlayerData)
