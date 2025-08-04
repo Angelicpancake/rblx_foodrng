@@ -11,11 +11,13 @@ local players = game:GetService("Players")
 local player = players.LocalPlayer
 
 local inventoryFrame = script.Parent.Parent.Parent.InventoryGui.Inventory
-local PreviewFrame = inventoryFrame.PreviewFrame
 local template = inventoryFrame.Scroll.Template
+
+local Upgrade = require(script.Parent.Parent.Upgrade.upgradeDefaultButton)
 
 local getFoodList = ReplicatedStorage.Events.Rng.GetFoodList
 local foodData = getFoodList:InvokeServer() -- get foodlist from server
+local inventoryData = player:WaitForChild("Inventory", 5)
 
 local foodPerPage = 12
 
@@ -37,6 +39,54 @@ local rarityColor = {
 	Mythical = Color3.fromRGB(137, 54, 71), --red
 }
 
+local Preview = inventoryFrame.Parent.Preview
+local BackButton = Preview.BackFrame.BackButton
+local UpgradeButton = Preview.UpgradeFrame.UpgradeButton
+
+local function openPreview(food: string)
+	Preview.Visible = true
+	UpgradeButton.Text = `UPGRADE`
+	Preview.Frame.ImageLabel.Image = foodData.foodList[food].image
+	for _, v in ipairs(Preview.Frame.Rarity:GetChildren()) do
+		v.BackgroundColor3 = rarityColor[foodData.foodList[food].rarity]
+	end
+
+	Preview.BackgroundColor3 = rarityColor[foodData.foodList[food].rarity]
+
+	BackButton.MouseButton1Click:Connect(function()
+		Preview.Visible = false
+	end)
+
+	UpgradeButton.MouseButton1Click:Connect(function()
+		local success = Upgrade.ButtonInit(food)
+		if success == "success" then
+			openPreview(food)
+		end
+	end)
+
+	local currStars = inventoryData.Food:FindFirstChild(food).Stars.Value
+
+	for i, info in ipairs(Preview.Stars:GetChildren()) do
+		if info:IsA("ImageLabel") then
+			if i > currStars + 1 then --first child is not an imagelabel
+				info.ImageTransparency = 0.7
+			else
+				info.ImageTransparency = 0
+			end
+		end
+	end
+
+	Preview.Info:WaitForChild("Name").Text = food
+	Preview.Info:WaitForChild("Origin").Text = `Origin: {foodData.foodList[food].country}`
+	Preview.Info:WaitForChild("Quan").Owned.Text = `Owned: x{inventoryData.Food:FindFirstChild(food).Quantity.Value}`
+	Preview.Info:WaitForChild("Quan").Upgrade.Text = `Upgrade: x{Upgrade.GetCost(food)}`
+
+	if currStars == 5 then
+		Preview.Info:WaitForChild("Quan").Upgrade.Text = `MAX 🔒`
+		UpgradeButton.Text = `MAX 🔒`
+	end
+end
+
 local function sortList(list: any, sorting: string)
 	if sorting == "rarity" then
 		table.sort(list, function(a, b)
@@ -50,38 +100,54 @@ local function createClone(foodItem: string, ownedSet: { [any]: any }, inventory
 	itemClone.Name = foodItem
 	itemClone.Visible = true
 
+	itemClone.StarQuan.Text = " "
+	itemClone.ImageLabel.Visible = false
+
+	itemClone.Click.MouseButton1Click:Connect(function()
+		if ownedSet[foodItem] then
+			openPreview(foodItem)
+		end
+	end)
+
 	local quan
+
+	itemClone.ItemImage.ItemName.Text = foodItem
+
+	if foodItem == "Tralalero Tralala Cappuccino Assassino" then
+		itemClone.ItemImage.ItemName.Text = "Tralalero"
+	end
 
 	if ownedSet[foodItem] then
 		quan = inventoryData.Food:FindFirstChild(foodItem).Quantity.Value
 
-		itemClone.ItemImage.ItemName.Text = foodItem
 		itemClone.ItemImage.ImageTransparency = 0
 		itemClone.ItemImage.ImageColor3 = Color3.new(255, 255, 255)
-
-		itemClone.ItemImage.MouseButton1Click:Connect(function()
-			--PreviewFrame.Visible = true
-			print(`clicked on {foodItem}`)
-			PreviewFrame.ImageButton.Image = foodData.foodList[foodItem].image or "rbxassetid://0" -- Fallback to a default image if not found
-			PreviewFrame.ImageButton.ItemInfo.Text = foodItem
-		end)
 	else
 		quan = 0
 	end
 
 	itemClone.Name = foodItem
-	itemClone.ItemImage.ItemQuan.Text = `X{quan}`
+	itemClone.ItemImage.ItemQuan.Text = `x{quan}`
 	itemClone.Parent = inventoryFrame.Scroll
 	itemClone.BackgroundColor3 = rarityColor[foodData.foodList[foodItem].rarity]
+	itemClone.UIStroke.Color = rarityColor[foodData.foodList[foodItem].rarity]
 	itemClone.ItemImage.Image = foodData.foodList[foodItem].image or "rbxassetid://0" -- Fallback to a default image if not found
+
+	--star info
+	if ownedSet[foodItem] then
+		local stars = inventoryData.Food:FindFirstChild(foodItem).Stars.Value
+
+		if stars > 0 then
+			itemClone.StarQuan.Text = stars
+			itemClone.ImageLabel.Visible = true
+		end
+	end
 end
 
 local function renderInventory(sorting: string, owned: boolean, currentPage: number, query: string)
+	Preview.Visible = false
 	local dexLabel = inventoryFrame.DexLabel
-
-	PreviewFrame.Visible = false
 	print(`curr page {currentPage}`)
-	local inventoryData = player:WaitForChild("Inventory", 5)
 	-- print(`testing {inventoryData}`)
 
 	if not inventoryData then
@@ -133,15 +199,18 @@ local function renderInventory(sorting: string, owned: boolean, currentPage: num
 	end
 
 	if query == "" then
-		local startIndex = (currentPage - 1) * foodPerPage + 1
-		local endIndex = startIndex + foodPerPage - 1
+		--local startIndex = (currentPage - 1) * foodPerPage + 1
+		--local endIndex = startIndex + foodPerPage - 1
 
-		if endIndex > #fullList then
-			endIndex = #fullList
-		end
+		--	if endIndex > #fullList then
+		--endIndex = #fullList
+		--	end
 
-		for i = startIndex, endIndex do
-			local foodItem = fullList[i]
+		--	for i = startIndex, endIndex do
+		--	local foodItem = fullList[i]
+		--		createClone(foodItem, ownedSet, inventoryData)
+		--	end
+		for _, foodItem in ipairs(fullList) do
 			createClone(foodItem, ownedSet, inventoryData)
 		end
 	else

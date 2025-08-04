@@ -14,6 +14,8 @@ local RecipeFrame = PreviewFrame.RecipeFrame
 local Template = ScrollFrame.Template
 local Template2 = RecipeFrame.Template
 
+local CurrentPreview
+
 local Fusion = {}
 local Remotes = {}
 
@@ -41,6 +43,10 @@ Fusion.clicked = function(fusionFood: string, info: RecipeEntry)
 
 	PreviewFrame.Visible = true
 	PreviewFrame.Panel.ItemImage.Image = info.Image
+	CurrentPreview = {
+		fusionFood = fusionFood,
+		info = info,
+	}
 
 	for name, v in pairs(info.Food) do
 		local item = Template2:clone()
@@ -55,6 +61,12 @@ Fusion.clicked = function(fusionFood: string, info: RecipeEntry)
 end
 
 Remotes.GetRecipeList = ReplicatedStorage.Events.Fusion.GetRecipeList
+Remotes.FusionRequest = ReplicatedStorage.Events.Fusion.FusionRequest
+
+Fusion.fusionRequest = function()
+	local outcome = Remotes.FusionRequest:InvokeServer(CurrentPreview)
+	print(outcome)
+end
 
 Fusion.renderRecipes = function(player)
 	PreviewFrame.Visible = false

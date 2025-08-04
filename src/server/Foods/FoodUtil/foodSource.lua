@@ -51,7 +51,7 @@ local foodList: { foodObj } = {
 	--fusion foods
 	["Naruto’s Ichiraku Ramen"] = { rarity = "Mythical", country = "Japan", image = "rbxassetid://90343831955463" },
 	["Bizzarre Onigiri"] = { rarity = "Mythical", country = "Japan", image = "rbxassetid://130053028297922" },
-	["Slime Waffle"] = { rarity = "Mythical", country = "USA", image = "rbxassetid://120069889204255" },
+	["Slime Waffle"] = { rarity = "Mythical", country = "USA", image = "rbxassetid://95163317147603" },
 	["Arise Sundubu"] = { rarity = "Mythical", country = "Korea", image = "rbxassetid://124184066218114" },
 	["MC Dumpling"] = { rarity = "Mythical", country = "China", image = "rbxassetid://88494249187896" },
 	["Tralalero Tralala Cappuccino Assassino"] = {
