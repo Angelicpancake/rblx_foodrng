@@ -12,10 +12,11 @@ local RollForFood = require(script.Parent.rollForFood)
 local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerManager)
 
 local function RollingInit()
-	RollEvent.OnServerEvent:Connect(function(player)
+	RollEvent.OnServerEvent:Connect(function(player, zone)
+		print(`zone is in {zone}`)
 		local PlayerData = PlayerDataFuncs.RuntimeGetPlayerData(player.UserId)
 		local LuckBoost = PlayerData.Upgrades.LuckBoost
-		local FoodResult = RollForFood(player, LuckBoost)
+		local FoodResult = RollForFood(player, LuckBoost, zone)
 		RollResultEvent:FireClient(player, FoodResult)
 	end)
 end

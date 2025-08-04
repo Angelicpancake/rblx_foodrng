@@ -189,12 +189,21 @@ for foodName, info in pairs(foodData.foodList) do
 	end
 
 	if not foodData.foodByCountry[info.country] then
-		foodData.foodByCountry[info.country] = {}
+		foodData.foodByCountry[info.country] = {
+			["Common"] = {},
+			["Uncommon"] = {},
+			["Rare"] = {},
+			["Epic"] = {},
+			["Legendary"] = {},
+			["Mythical"] = {},
+		}
 	end
 
 	--add to the table
-	foodData.foodByRarity[info.rarity][foodName] = info
-	foodData.foodByCountry[info.country][foodName] = info
+	table.insert(foodData.foodByRarity[info.rarity], { FoodName = foodName, Food = info })
+	table.insert(foodData.foodByCountry[info.country][info.rarity], { FoodName = foodName, Food = info })
+	--foodData.foodByRarity[info.rarity][foodName] = info
+	--foodData.foodByCountry[info.country][foodName] = info
 end
 
 return foodData
