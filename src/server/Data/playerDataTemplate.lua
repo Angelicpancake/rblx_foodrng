@@ -18,13 +18,17 @@ local PlayerDataTemplate: PlayerDataTypes.PlayerDataTemplateType = {
 		LastLogin = function()
 			local now = DateTime.now()
 			return now.UnixTimestampMillis
-		end
+		end,
+		CalendarProgress = 0
 	},
 	Upgrades = {
 		LuckBoost = 0.00,
 		Bonuses = {}
 	},
-	Timers = {}
+	Timers = {},
+	Settings = {
+		FastRoll = false
+	},
 }
 
 return PlayerDataTemplate

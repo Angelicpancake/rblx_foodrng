@@ -1,11 +1,7 @@
 --!strict
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local Util = ServerScriptService:WaitForChild("Server"):WaitForChild("Util")
-local GivePlayerBonus = require(Util.givePlayerBonus)
-
 local Types = ServerScriptService:WaitForChild("Server"):WaitForChild("Types")
-local PlayerDataTypes = require(Types.playerDataTypes)
 local BonusDataTypes = require(Types.bonusDataTypes)
 
 type FoodBonusType = {
@@ -22,13 +18,5 @@ local FoodBonuses: FoodBonusType = {
     { Threshold = 25, Bonus = { Name = "TotalFood25", Luck = 0.1, Stackable = false } }
 }
 
-local function UpdateFoodCollectionBonuses(TotalFoods: number, UserId: number)
-    for _, FoodBonus in FoodBonuses do
-        if TotalFoods == FoodBonus.Threshold then
-            GivePlayerBonus(FoodBonus.Bonus, UserId)
-            break
-        end
-    end
-end
 
-return UpdateFoodCollectionBonuses
+return FoodBonuses

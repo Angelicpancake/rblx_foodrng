@@ -7,15 +7,15 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local getPlayerMap = require(script.Parent.Parent.Data.playerDataMap)
 local CreateFoodObj = require(script.Parent.Parent.Foods.FoodUtil.foodObject)
+local FoodSource = require(script.Parent.Parent.Foods.FoodUtil.foodSource)
 local UpdateFoodCollectionBonuses = require(
-	ServerScriptService:WaitForChild("Server"):WaitForChild("Collection"):WaitForChild("General").collectionTotalFood
+	ServerScriptService:WaitForChild("Server"):WaitForChild("Collection"):WaitForChild("General").updateFoodCollectionBonuses
 )
 
 local replicatedStorage = game:GetService("ReplicatedStorage")
 local updateInventoryRemote = replicatedStorage.Events.Rng.UpdateInventory
 
 function givePlayer(foodName: string, chance: string, player: Player)
-	print(foodName)
 	local PlayerMap = getPlayerMap.RuntimeGetPlayerData(player.UserId)
 	local existingItem = PlayerMap.Inventory.Food[foodName] ~= nil
 	local result = "success"
@@ -42,7 +42,8 @@ function givePlayer(foodName: string, chance: string, player: Player)
 		}
 		PlayerMap.Profile.FoodDex += 1
 		local TotalFood = PlayerMap.Profile.FoodDex
-		UpdateFoodCollectionBonuses(TotalFood, player.UserId)
+		local Category = FoodSource.foodList[foodName].country
+		UpdateFoodCollectionBonuses(TotalFood, player.UserId, Category)
 
 		local Stars = 0
 		local Quantity = 1

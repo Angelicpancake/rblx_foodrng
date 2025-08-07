@@ -9,15 +9,15 @@ local PlayerDataFuncs = require(ServerScriptService:WaitForChild("Server"):WaitF
 
 local RollForFood = require(script.Parent.rollForFood)
 
-local TimerFuncs = require(ServerScriptService:WaitForChild("Server"):WaitForChild("TimedEvents").timerManager)
-
 local function RollingInit()
 	RollEvent.OnServerEvent:Connect(function(player, zone)
 		print(`zone is in {zone}`)
 		local PlayerData = PlayerDataFuncs.RuntimeGetPlayerData(player.UserId)
 		local LuckBoost = PlayerData.Upgrades.LuckBoost
 		local FoodResult = RollForFood(player, LuckBoost, zone)
-		RollResultEvent:FireClient(player, FoodResult)
+
+		local FastRollEnabled = PlayerData.Settings.FastRoll
+		RollResultEvent:FireClient(player, FoodResult, FastRollEnabled)
 	end)
 end
 --get a random rarity

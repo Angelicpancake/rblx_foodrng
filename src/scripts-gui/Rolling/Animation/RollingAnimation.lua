@@ -1,10 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
 
-local Trove = require(ReplicatedStorage:WaitForChild("Packages").Trove)
 local openExclusiveGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").openExclusiveGui)
-local openGui = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Util").openGui)
 
 local RollingAnimationGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("RollingAnimationGui")
 local DefaultGui = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("DefaultGui")
@@ -24,9 +21,6 @@ local function EndRollingAnimation()
 end
 
 local function PlayRollingAnimation(RollResult)
-    while PanAnimation.Cleaning do
-        task.wait(0.1)
-    end
     PanAnimation._Completed.Event:Once(function()
         EndRollingAnimation()
     end)

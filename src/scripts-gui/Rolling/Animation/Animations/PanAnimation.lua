@@ -38,7 +38,7 @@ local PanAnimationTypes = require(
 	Players.LocalPlayer:WaitForChild("PlayerScripts"):WaitForChild("Client"):WaitForChild("Types").PanAnimationTypes
 )
 
-local Animation: PanAnimationTypes.AnimationType = {
+local Animation = {
 	_Trove = Trove.new(),
 	_Completed = Instance.new("BindableEvent"),
 	Components = {
@@ -221,6 +221,9 @@ local Animation: PanAnimationTypes.AnimationType = {
 				self._Trove:Add(self._HeightValue)
 				self._Trove:Add(self._SquishValue)
 
+				local Shadow = assert(CookingPan:FindFirstChild("Shadow"))
+				local PancakePPart = assert(Pancake.PrimaryPart)
+
 				for Key, Value in self._Tweens do
 					local TweenInfo = TweenInfo.new(Value.Duration, Value.EasingStyle, Value.EasingDirection)
 					local Target
@@ -242,9 +245,9 @@ local Animation: PanAnimationTypes.AnimationType = {
 				self._Trove:Add(self._HeightValue:GetPropertyChangedSignal("Value"):Connect(function()
 					local HeightOffset = self._HeightValue.Value - self._LastHeightValue
 					self._LastHeightValue = self._HeightValue.Value
-					CookingPan.Shadow.Size += Vector3.new(HeightOffset / 4, 0, HeightOffset / 4)
+					Shadow.Size += Vector3.new(HeightOffset / 4, 0, HeightOffset / 4)
 					Pancake:TranslateBy(Vector3.new(0, HeightOffset, 0))
-					Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(math.rad(0), math.rad(0), math.rad(12)))
+					Pancake:PivotTo(PancakePPart.CFrame * CFrame.Angles(math.rad(0), math.rad(0), math.rad(12)))
 				end))
 
 				self._Trove:Add(self._SquishValue:GetPropertyChangedSignal("Value"):Connect(function()
@@ -390,8 +393,11 @@ local Animation: PanAnimationTypes.AnimationType = {
 		Pancake.Parent = WorldModel
 
 		RollResultPart = RollResultPartTemplate:Clone()
-		RollResultPart.FrontDecal.Transparency = 1
-		RollResultPart.BackDecal.Transparency = 1
+		local FDecal = assert(RollResultPart:FindFirstChild("FrontDecal"))
+		local BDecal = assert(RollResultPart:FindFirstChild("BackDecal"))
+
+		FDecal.Transparency = 1
+		BDecal.Transparency = 1
 		RollResultPart.Parent = WorldModel
 
 		self._Trove:Add(CookingPan)
@@ -405,13 +411,15 @@ local Animation: PanAnimationTypes.AnimationType = {
 
 	Play = function(self, RollResult)
 		--Change color based on rarity
-		Pancake.MeshPart.Color = self.Colors[RollResult.Food.rarity]
+		local PancakeMesh = assert(Pancake:FindFirstChild("MeshPart"))
+		PancakeMesh.Color = self.Colors[RollResult.Food.rarity]
 		self.Components.ShineAnimation = ShineAnimation.new(self.Colors[RollResult.Food.rarity])
 
-		RollResultPart.FrontDecal.Texture = RollResult.Food.image
-		RollResultPart.BackDecal.Texture = RollResult.Food.image
+		local FDecal = assert(RollResultPart:FindFirstChild("FrontDecal"))
+		local BDecal = assert(RollResultPart:FindFirstChild("BackDecal"))
 
-		local OriginalPanCFrame = CookingPan.PrimaryPart.CFrame
+		FDecal.Texture = RollResult.Food.image
+		BDecal.Texture = RollResult.Food.image
 
 		--First Scale
 		self._Trove:Add(self.Components.ScalingAnimation._Completed.Event:Once(function()
@@ -423,12 +431,13 @@ local Animation: PanAnimationTypes.AnimationType = {
 			self.Components.PancakeAnimation:Play()
 		end))
 
+		local PancakePPart = assert(Pancake.PrimaryPart)
 		self._Trove:Add(self.Components.PancakeAnimation._HitPanEvent.Event:Connect(function()
 			--Make pancake same orientation as pan after flipping in the air
 			local Remaining = self.Components.FlippingAnimation._RotationValue.Value - Pancake.PrimaryPart.Orientation.Z
-			Pancake:PivotTo(Pancake.PrimaryPart.CFrame * CFrame.Angles(math.rad(0), math.rad(0), math.rad(Remaining)))
+			Pancake:PivotTo(PancakePPart.CFrame * CFrame.Angles(math.rad(0), math.rad(0), math.rad(Remaining)))
 			-- make cracks more visible
-			for _, Child in Pancake.MeshPart:GetChildren() do
+			for _, Child in PancakeMesh:GetChildren() do
 				if Child.ClassName == "Decal" then
 					Child.Transparency -= 1 / self.Components.FlippingAnimation.Repeats
 				end
@@ -488,8 +497,8 @@ local Animation: PanAnimationTypes.AnimationType = {
 			self._Trove:Remove(CookingPan)
 			self._Trove:Remove(Pancake)
 
-			RollResultPart.FrontDecal.Transparency = 0
-			RollResultPart.BackDecal.Transparency = 0
+			FDecal.Transparency = 0
+			BDecal.Transparency = 0
 			self.Components.ShineAnimation:Play()
 		end))
 
@@ -499,7 +508,6 @@ local Animation: PanAnimationTypes.AnimationType = {
 			end
 
 			if Input.UserInputType == Enum.UserInputType.MouseButton1 and not ShakingAnimationPlayed then
-				print(self._Trove)
 				self.Components.ScalingAnimation:Cleanup()
 				self.Components.FlippingAnimation:Cleanup()
 				self.Components.PancakeAnimation:Cleanup()

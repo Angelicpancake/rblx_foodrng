@@ -20,14 +20,16 @@ export type ProfileDataTemplateType = {
 	Level: number,
 	XP: number,
 	FoodDex: number,
-	LastLogin: () -> number
+	LastLogin: () -> number,
+	CalendarProgress: number
 }
 
 export type ProfileDataType = {
 	Level: number,
 	XP: number,
 	FoodDex: number,
-	LastLogin: number
+	LastLogin: number,
+	CalendarProgress: number
 }
 
 export type UpgradeDataType = {
@@ -36,12 +38,17 @@ export type UpgradeDataType = {
 	Bonuses: {BonusDataTypes.BonusDataType}
 }
 
+export type SettingsDataType = {
+	FastRoll: boolean
+}
+
 export type PlayerDataType = {
 	_DATAVERSION: number,
 	Inventory: InventoryDataType,
 	Profile: ProfileDataType,
 	Upgrades: UpgradeDataType,
-	Timers: {TimeEventDataTypes.TimeEventDataType}
+	Timers: {TimeEventDataTypes.TimeEventDataType},
+	Settings: SettingsDataType
 }
 
 export type PlayerDataTemplateType = {
@@ -49,7 +56,8 @@ export type PlayerDataTemplateType = {
 	Inventory: InventoryDataType,
 	Profile: ProfileDataTemplateType,
 	Upgrades: UpgradeDataType,
-	Timers: {TimeEventDataTypes.TimeEventDataType}
+	Timers: {TimeEventDataTypes.TimeEventDataType},
+	Settings: SettingsDataType
 }
 
 local Rarities = {}
@@ -81,7 +89,8 @@ local PlayerDataTypeChecker = t.strictInterface({
 		Level = t.integer, -- Integer, not float
 		XP = t.numberConstrained(0, math.huge),
 		FoodDex = t.integer,
-		LastLogin = t.number
+		LastLogin = t.number,
+		CalendarProgress = t.number
 	}),
 	Upgrades = t.interface({
 		LuckBoost = t.numberConstrained(0, 10), -- Between 0 and 10
@@ -99,7 +108,10 @@ local PlayerDataTypeChecker = t.strictInterface({
 			Time = t.number,
 			Callback = t.optional(t.callback)
 		})
-	)
+	),
+	Settings = t.interface({
+		FastRoll = t.boolean
+	})
 })
 
 return { PlayerDataTypeChecker = PlayerDataTypeChecker }

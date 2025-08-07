@@ -13,7 +13,9 @@ local PlayerDataTypes = require(Types.playerDataTypes)
 local PlayerDataTemplate = require(script.Parent.playerDataTemplate) --player data template
 local deepCopy = require(replicatedStorage:WaitForChild("Shared"):WaitForChild("Util").deepCopy) --deep copy function
 local PlayerDataFuncs = require(script.Parent.playerDataMap)
-local HandleLastLogin = require(script.Parent.handleLastLogin)
+local CheckLastLogin = require(script.Parent.checkLastLogin)
+local GivePlayerItem = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Util").givePlayerItem)
+local Calendar = require(script.Parent.gameData)
 
 local function addToPlayer(parent: Player | Folder, DataObj: PlayerDataTypes.PlayerDataType)
 	for key, value in pairs(DataObj) do
@@ -88,11 +90,20 @@ local function onPlayerJoin(player, dataStore)
 		--go to previous saved data
 	end
 
-	HandleLastLogin(PlayerData.Profile)
+	--updates players login info and returns true if logging in on a new day
+	local NewDay = CheckLastLogin(PlayerData.Profile)
+	if NewDay then
+		PlayerData.Profile.CalendarProgress += 1
+		-- GivePlayer
+	end
 
 	print("Player Data:", PlayerData)
 	addToPlayer(player, PlayerData)
 	PlayerDataFuncs.RuntimeSetPlayerData(player.UserId, PlayerData)
+
+	if NewDay then
+		GivePlayerItem(Calendar[PlayerData.Profile.CalendarProgress], player)
+	end
 end
 
 return onPlayerJoin
