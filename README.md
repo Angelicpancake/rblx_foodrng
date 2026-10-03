@@ -1,19 +1,8 @@
-# 🍜 Food RNG (`cat-rng`)
+# FoodRNG: Collect, Fuse, and Upgrade Dishes from Around the World
 
 A Roblox **food-collecting RNG game** written in Luau. Players roll for dishes from around the world, fill out a cookbook, fuse ingredients into Mythical recipes, and star-upgrade duplicates — all while stacking luck bonuses that make rare rolls more likely.
 
 ## Core Game Loop
-
-```mermaid
-flowchart LR
-    A[Roll] --> B[Rarity + food picked on server]
-    B --> C[Added to inventory / FoodDex]
-    C --> D[Collection milestones grant Luck bonuses]
-    D --> A
-    C --> E[Fuse 3 ingredients into a Mythical dish]
-    C --> F[Spend duplicates to add Stars]
-```
-
 1. **Roll** – click to roll; the server picks a rarity, then a food of that rarity.
 2. **Collect** – new foods grow your *FoodDex* and unlock permanent luck bonuses.
 3. **Fuse** – combine specific foods (e.g. `Gimbap | Onigiri | White Rice`) into a Mythical fusion dish.
@@ -113,13 +102,28 @@ Cost = floor( (CurrStar + 1) × 2^(CurrStar + 5) / RarityDiv )
 
 ### Player Data
 
-- Template: `Data/playerDataTemplate.lua` (`_DATAVERSION = 3`) with `Inventory`, `Profile`, `Upgrades`, `Timers`, `Settings`.
-- Loaded on join with a retry loop; missing fields are back-filled from the template; data is mirrored as Folders/Values under the `Player` for the client and held in a runtime map (`Data/playerDataMap.lua`).
-- Daily login tracking (`checkLastLogin.lua`) advances a calendar (`gameData.lua`) and grants an item.
-- Timed events/bonus timers: `TimedEvents/` (built on `Trove`).
+Each player's save is one nested table, deep-copied from `Data/playerDataTemplate.lua`:
+
+```lua
+{
+  _DATAVERSION = 3,
+  Inventory = { Food = { [name] = { Quantity, Rarity, Stars } }, Items = {} },
+  Profile   = { Level, XP, FoodDex, LastLogin (ms), CalendarProgress },
+  Upgrades  = { LuckBoost, Bonuses = { { Name, Luck, Stackable } } },
+  Timers    = {},
+  Settings  = { FastRoll = false },
+}
+```
+
+- **Persistence:** `DataStoreService`, keyed by UserId. `GetAsync` on join (retried every 5s on failure), `SetAsync` on leave.
+- **Schema upgrades:** recursive `MigratePlayerData` back-fills fields missing from the template. A `t.strictInterface` checker (`Types/playerDataTypes.lua`) validates the shape, built from `rarityList`/`itemList`.
+- **Two copies of state:** the server's authoritative copy lives in a runtime map keyed by UserId (`Data/playerDataMap.lua`). It is mirrored as Folders/Values under the `Player` so the client can read it, and `UpdateInventory` is invoked after each change.
+- **Daily login:** `checkLastLogin.lua` compares UTC days of the stored timestamp, advances `CalendarProgress` and grants that day's item from `gameData.lua`.
+- **Timers (the one class):** `TimedEvents/timerClass.lua` is a metatable class (`New`, `Start`, `Stop`, `GetTimeLeft`, `Destroy`) with a `BindableEvent`-backed `Finished` signal. `timerManager.lua` wraps it with `Trove` for cleanup and validates event types with `t`. All other modules are plain functions/tables.
+- **Luck bonuses:** non-stackable bonuses are de-duplicated by `Name` (`Util/givePlayerBonus.lua`) and `LuckBoost` is recomputed on each grant.
 
 > [!WARNING]
-> Known gaps in the current code: saving happens **only on player leave** (`Data/saving/periodicSave.lua` is empty); data-version migration and corrupt-data rollback are stubs; the fusion ingredient-cost check is commented out; there is no server-side roll cooldown; and the DataStore name/scope (`"playerData"`, `"43"`) is marked "for testing".
+> Known gaps in the current code: the schema checker caps `Stars` at 2; saving happens **only on player leave** (`Data/saving/periodicSave.lua` is empty); data-version migration and corrupt-data rollback are stubs; the fusion ingredient-cost check is commented out; there is no server-side roll cooldown; and the DataStore name/scope (`"playerData"`, `"43"`) is marked "for testing".
 
 ---
 
